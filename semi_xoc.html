@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEMI · Fibra Optica XOC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F4F2;--surface:#fff;--border:#E4E4E0;--border2:#D0D0CA;--text:#1A1A18;--muted:#7A7A75;--accent:#1A5CFF;--al:#E8EFFE;--green:#0F6E56;--gl:#E1F5EE;--amber:#854F0B;--aml:#FAEEDA;--red:#993C1D;--rl:#FAECE7;--purple:#534AB7;--pl:#F3EEFE;--r:8px;--rl2:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+input,select,textarea,button{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* LOGIN */
+#ls{display:flex;align-items:center;justify-content:center;position:fixed;inset:0;z-index:2000;background:var(--bg)}
+.lc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 36px;width:100%;max-width:360px}
+.ll{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.li{width:36px;height:36px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.lt{font-size:15px;font-weight:600}.ls2{font-size:11px;color:var(--muted)}
+.lf{margin-bottom:14px}
+.lf label{display:block;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.lf input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--bg);outline:none}
+.lf input:focus{border-color:var(--accent)}
+.btn-l{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:11px;font-size:14px;font-weight:500;cursor:pointer}
+.btn-l:hover{opacity:.88}
+#le{margin-top:10px;font-size:12px;color:var(--red);text-align:center;min-height:16px}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+.tb{height:54px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-i{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-t{font-size:14px;font-weight:600}.logo-s{font-size:11px;color:var(--muted)}
+.nav{display:flex;gap:2px}
+.nb{padding:6px 14px;border-radius:var(--r);font-size:12px;border:none;cursor:pointer;color:var(--muted);background:transparent;font-weight:500;transition:all .15s}
+.nb:hover,.nb.active{background:var(--bg);color:var(--text)}
+.tbr{display:flex;align-items:center;gap:10px}
+.bp{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer}
+.bp:hover{opacity:.88}
+.bg{background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 14px;border-radius:var(--r);font-size:12px;cursor:pointer;transition:all .15s}
+.bg:hover{border-color:var(--border2);color:var(--text)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--al);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--accent)}
+.sd{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.sd.sy{background:var(--amber);animation:bl 1s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* VISTAS */
+.v{display:none}.v.active{display:block}
+
+/* FILTER BAR */
+.fb{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;min-width:220px}
+.sw input{border:none;background:transparent;font-size:12px;outline:none;color:var(--text);width:100%}
+.sep{width:1px;height:18px;background:var(--border);margin:0 4px}
+.fl{font-size:11px;color:var(--muted);font-weight:500}
+.pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--surface);transition:all .15s}
+.pill.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* TAGS */
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.2px;text-transform:uppercase;display:inline-block}
+.ti{background:var(--rl);color:var(--red)}.to{background:var(--al);color:var(--accent)}.td{background:var(--gl);color:var(--green)}.tde{background:var(--pl);color:var(--purple)}
+.tx{background:var(--al);color:var(--accent)}.tp{background:var(--bg);color:var(--muted);border:1px solid var(--border)}.tej{background:var(--aml);color:var(--amber)}.tfin{background:var(--gl);color:var(--green)}.tce{background:var(--pl);color:var(--purple)}.trp{background:var(--rl);color:var(--red)}.tpr{background:var(--al);color:var(--accent)}
+
+/* DASH */
+.db{padding:20px 24px}
+.kg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:14px 16px}
+.kl{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.kv{font-size:24px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+.ks{font-size:10px;color:var(--muted);margin-top:4px}
+.kpi.al .kv{color:var(--red)}.kpi.wn .kv{color:var(--amber)}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.dc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px}
+.dct{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.br{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bn{font-size:12px;width:120px;flex-shrink:0}
+.bw{flex:1;height:5px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bf{height:100%;border-radius:99px}
+.bnum{font-size:12px;font-weight:600;font-family:'DM Mono',monospace;width:20px;text-align:right}
+.er{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.er:last-child{border-bottom:none}
+.ecode{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:2px}
+.ename{font-size:12px;font-weight:500}
+.err{display:flex;align-items:center;gap:6px}
+.ar{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ar:last-child{border-bottom:none}
+.ad{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.at{font-size:12px;font-weight:500}.am{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* PROYECTOS LISTA */
+.pb{padding:20px 24px}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px;cursor:pointer;transition:all .15s}
+.pc:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(26,92,255,.08)}
+.pc.ia{border-left:3px solid var(--red)}
+.pco{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.pn{font-size:13px;font-weight:600;line-height:1.3}
+.pm{font-size:11px;color:var(--muted);margin-top:6px}
+.pt{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.prb{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px}
+.prf{height:100%;border-radius:99px;transition:width .3s}
+
+/* PROYECTO DETALLE */
+#vp{display:none}
+.ph{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px}
+.bc{font-size:12px;color:var(--muted);margin-bottom:10px;cursor:pointer}
+.bc span{color:var(--accent)}
+.pt2{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.pcl{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.pnl{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+.psl{font-size:12px;color:var(--muted);margin-top:3px}
+.pmg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pml{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.pmv{font-size:12px;font-weight:500}
+.py{padding:20px 24px}
+.ecg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:20px}
+.ec{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:14px 16px;cursor:pointer;transition:all .15s}
+.ec:hover{border-color:var(--accent)}
+.ec.ia{border-left:3px solid var(--red)}
+.ect{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.eci{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:2px}
+.ecn{font-size:13px;font-weight:500}
+.ecr2{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.ecrl{display:flex;justify-content:space-between;font-size:11px}
+.ecll{color:var(--muted)}.eclv{font-weight:500}
+.ee{display:flex;align-items:center;gap:6px;padding-top:8px;border-top:1px solid var(--border)}
+.eel{font-size:10px;color:var(--muted)}
+
+/* COMENTARIOS */
+.cs{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px}
+.cl{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:300px;overflow-y:auto}
+.ci{display:flex;gap:10px}
+.cav{width:28px;height:28px;border-radius:50%;background:var(--al);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--accent);flex-shrink:0}
+.cb{flex:1;background:var(--bg);border-radius:var(--r);padding:8px 12px}
+.cm{font-size:10px;color:var(--muted);margin-bottom:3px}
+.cm b{color:var(--text);font-weight:600}
+.ctx{font-size:12px;line-height:1.5}
+.cia{border-top:1px solid var(--border);padding-top:12px}
+.cis{display:flex;gap:6px;margin-bottom:8px}
+.cis select,.cis input{padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:11px;background:var(--bg);outline:none}
+.cif{display:flex;gap:8px;align-items:flex-end}
+.cit{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;resize:none;background:var(--surface);outline:none}
+.cit:focus{border-color:var(--accent)}
+
+/* ENCARGO DETALLE */
+#ve{display:none}
+.eh{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px}
+.eht{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.ehc{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.ehn{font-size:18px;font-weight:600;letter-spacing:-0.3px}
+.ew{display:flex;gap:14px}
+.eb{display:flex;flex-direction:column;gap:3px}
+.ebl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.es{padding:5px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;cursor:pointer;font-weight:500}
+
+/* TABS */
+.tbs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;overflow-x:auto}
+.tbb{padding:12px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:transparent;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tbb:hover{color:var(--text)}
+.tbb.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tc{display:none;padding:20px 24px}
+.tc.active{display:block}
+
+/* FORMS */
+.fs{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px;margin-bottom:14px}
+.fst{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fi{display:flex;flex-direction:column;gap:4px}
+.fi.full{grid-column:1/-1}.fi.half{grid-column:span 2}
+.fi label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.fi input,.fi select,.fi textarea{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;color:var(--text)}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent);background:#fff}
+.fi input[readonly]{color:var(--muted);cursor:default}
+
+/* TABLAS */
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border)}
+.dt td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt input{border:none;background:transparent;font-size:12px;font-family:inherit;outline:none;width:100%}
+.dt input:focus{background:var(--al);border-radius:4px;padding:2px 4px}
+.tds{padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:11px;background:var(--bg);outline:none;font-family:inherit}
+.arb{font-size:12px;color:var(--accent);cursor:pointer;border:none;background:transparent;font-family:inherit}
+.arb:hover{text-decoration:underline}
+.db2{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px}
+.db2:hover{color:var(--red);background:var(--rl)}
+
+/* MINI KPIS */
+.mk{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.mki{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;text-align:center}
+.mkl{font-size:10px;color:var(--muted);margin-bottom:4px}
+.mkv{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
+
+/* DOC CHECK */
+.dck{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:var(--r);margin-top:10px}
+.dcl{font-size:12px;font-weight:500}
+.dcbs{display:flex;gap:6px}
+.dcb{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+.dcb.pen{background:var(--rl);color:var(--red);border-color:var(--red)}
+.dcb.ok{background:var(--gl);color:var(--green);border-color:var(--green)}
+
+/* TECNICO */
+.tec{background:var(--bg);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+
+/* ALERTA */
+.ab{background:var(--rl);border:1px solid #F0997B;border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.abd{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.abt{font-size:12px;color:var(--red);font-weight:500}
+
+/* SAVE ROW */
+.sr{display:flex;justify-content:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;z-index:3000;background:var(--text);color:#fff;border-radius:var(--r);padding:10px 16px;font-size:13px;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:480px;max-height:80vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:16px;font-weight:600;margin-bottom:20px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg2{display:flex;flex-direction:column;gap:4px}
+.fg2.full{grid-column:1/-1}
+.fg2 label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+.fg2 input,.fg2 select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;background:var(--bg);outline:none}
+.fg2 input:focus,.fg2 select:focus{border-color:var(--accent)}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lc">
+    <div class="ll">
+      <div class="li">
+        <svg viewBox="0 0 18 18" fill="none" width="18" height="18"><circle cx="4" cy="9" r="2" fill="white"/><circle cx="14" cy="9" r="2" fill="white"/><line x1="6" y1="9" x2="12" y2="9" stroke="white" stroke-width="1.5"/><line x1="9" y1="3" x2="9" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="9" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div><div class="lt">SEMI Fibra Optica</div><div class="ls2">Gestion de Proyectos · Catalunya</div></div>
+    </div>
+    <div class="lf"><label>Usuario</label><input type="email" id="lemail" placeholder="usuario@empresa.com" autocomplete="email"></div>
+    <div class="lf"><label>Contrasena</label><input type="password" id="lpass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn-l" id="lbtn" onclick="doLogin()">Entrar</button>
+    <div id="le"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="tb">
+    <div class="logo">
+      <div class="logo-i"><svg viewBox="0 0 18 18" fill="none" width="16" height="16"><circle cx="4" cy="9" r="2" fill="white"/><circle cx="14" cy="9" r="2" fill="white"/><line x1="6" y1="9" x2="12" y2="9" stroke="white" stroke-width="1.5"/><line x1="9" y1="3" x2="9" y2="6" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="9" y2="15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="logo-t">SEMI Fibra Optica</div><div class="logo-s">XOC</div></div>
+    </div>
+    <div class="nav">
+      <button class="nb active" onclick="irVista('D',this)">Dashboard</button>
+      <button class="nb" onclick="irVista('P',this)">Proyectos</button>
+      <button class="nb" onclick="irVista('M',this)">Mapa</button>
+    </div>
+    <div class="tbr">
+      <div class="sd" id="sdot"></div>
+      <span id="uem" style="font-size:11px;color:var(--muted);"></span>
+      <button class="bp" onclick="abrirMP()">+ Nuevo proyecto</button>
+      <div class="av" id="uav">?</div>
+      <button class="bg" onclick="doLogout()" style="font-size:11px;padding:5px 10px;">Salir</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="vistaD" class="v active">
+    <div class="fb">
+      <div class="sw"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg><input id="si" placeholder="Buscar proyecto, encargo, municipio..." oninput="rD()"></div>
+      <div class="sep"></div><span class="fl">Estado</span>
+      <span class="pill active" onclick="sf('e','t',this)">Todos</span>
+      <span class="pill" onclick="sf('e','En ejecucion',this)">En ejecucion</span>
+      <span class="pill" onclick="sf('e','Replanteo',this)">Replanteo</span>
+      <span class="pill" onclick="sf('e','Finalizado',this)">Finalizado</span>
+      <div class="sep"></div><span class="fl">Tipo</span>
+      <span class="pill active" onclick="sf('t','t',this)">Todos</span>
+      <span class="pill" onclick="sf('t','ING',this)">ING</span>
+      <span class="pill" onclick="sf('t','OT',this)">OT</span>
+      <span class="pill" onclick="sf('t','DESP',this)">DESP</span>
+      <span class="pill" onclick="sf('t','DF',this)">DF</span>
+    </div>
+    <div class="db">
+      <div class="kg">
+        <div class="kpi"><div class="kl">Encargos activos</div><div class="kv" id="k1">-</div><div class="ks">total encargos</div></div>
+        <div class="kpi wn"><div class="kl">Pendiente certificar</div><div class="kv" id="k2">-</div><div class="ks">ejecutado sin cobrar</div></div>
+        <div class="kpi al"><div class="kl">ING pendientes</div><div class="kv" id="k3">-</div><div class="ks">obra parada</div></div>
+        <div class="kpi"><div class="kl">Ejecucion media</div><div class="kv" id="k4">-</div><div class="ks">encargos activos</div></div>
+        <div class="kpi al"><div class="kl">Proyectos con alerta</div><div class="kv" id="k5">-</div><div class="ks">requieren atencion</div></div>
+      </div>
+      <div class="dg">
+        <div class="dc"><div class="dct">Encargos por estado</div><div id="ebar"></div></div>
+        <div class="dc"><div class="dct">Alertas</div><div id="eal"></div></div>
+      </div>
+      <div class="dc" style="margin-bottom:0;"><div class="dct">Encargos recientes</div><div id="erec"></div></div>
+    </div>
+  </div>
+
+  <!-- PROYECTOS LISTA -->
+  <div id="vistaP" class="v">
+    <div class="fb">
+      <div class="sw"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg><input id="spr" placeholder="Buscar proyecto..." oninput="rP()"></div>
+      <span id="stp" style="font-size:12px;color:var(--muted);margin-left:8px;"></span>
+    </div>
+    <div class="pb"><div class="pg" id="pgrid"></div></div>
+  </div>
+
+  <!-- MAPA -->
+  <div id="vistaM" class="v">
+    <div style="padding:20px 24px;"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);height:400px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;">Mapa de Catalunya · Leaflet.js (proxima version)</div></div>
+  </div>
+
+  <!-- PROYECTO DETALLE -->
+  <div id="vp">
+    <div class="ph">
+      <div class="bc" onclick="vLista()">&#8592; <span>Proyectos</span> / <span id="bcp"></span></div>
+      <div class="pt2">
+        <div><div class="pcl" id="pco"></div><div class="pnl" id="pno"></div><div class="psl" id="pmu"></div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="bg" onclick="vLista()">&#8592; Volver</button>
+          <button class="bp" onclick="abrirME()">+ Nuevo encargo</button>
+        </div>
+      </div>
+      <div class="pmg">
+        <div><div class="pml">Hijo Navision</div><div class="pmv" id="pnav">-</div></div>
+        <div><div class="pml">Promotor</div><div class="pmv" id="ppro">-</div></div>
+        <div><div class="pml">Responsable</div><div class="pmv" id="pres">-</div></div>
+        <div><div class="pml">Fecha entrada</div><div class="pmv" id="pfec">-</div></div>
+        <div><div class="pml">Nodo de salida</div><div class="pmv" id="pnod">-</div></div>
+      </div>
+    </div>
+    <div class="py">
+      <div id="ialert" class="ab" style="display:none;"><div class="abd"></div><div class="abt" id="ialertT"></div></div>
+      <div class="dct" style="margin-bottom:12px;">Encargos del proyecto</div>
+      <div class="ecg" id="ecards"></div>
+      <div class="dct" style="margin-bottom:12px;margin-top:8px;">Comentarios del proyecto</div>
+      <div class="cs">
+        <div class="cl" id="clist"></div>
+        <div class="cia">
+          <div class="cis">
+            <select id="cetq"><option>General</option><option>Accesos</option><option>Permisos</option><option>Replanteo</option><option>Incidencia</option><option>ENC01</option><option>ENC03</option><option>ENC04</option><option>ENC05</option></select>
+            <input id="cautor" placeholder="Tu nombre" style="width:140px;">
+          </div>
+          <div class="cif">
+            <textarea class="cit" id="ctxt" rows="2" placeholder="Escribe un comentario..."></textarea>
+            <button class="bp" onclick="enviarC()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENCARGO DETALLE -->
+  <div id="ve">
+    <div class="eh">
+      <div class="bc"><span onclick="vLista()" style="cursor:pointer;color:var(--accent)">Proyectos</span> / <span id="bcp2" onclick="vProy()" style="cursor:pointer;color:var(--accent)"></span> / <span id="bce" style="color:var(--muted)"></span></div>
+      <div class="eht">
+        <div><div class="ehc" id="ehco"></div><div class="ehn" id="ehno"></div></div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div class="ew">
+            <div class="eb"><div class="ebl">QPERA</div><select class="es" id="eqp" onchange="gEst()"><option>PDT DISSENY</option><option>EN CURS</option><option>PDT VALIDACIO</option><option>VALIDAT</option><option>TANCAT</option></select></div>
+            <div class="eb"><div class="ebl">SEMI</div><select class="es" id="esemi" onchange="gEst()"><option>Creado</option><option>Presupuesto</option><option>Asignado</option><option>Replanteo</option><option>En ejecucion</option><option>Finalizado</option><option>Certificado</option></select></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="bg" onclick="vProy()">&#8592; Proyecto</button>
+            <button class="bp" onclick="gTodo()">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tbs">
+      <button class="tbb active" onclick="sTab('datos',this)">Datos base</button>
+      <button class="tbb" onclick="sTab('accesos',this)">Accesos</button>
+      <button class="tbb" onclick="sTab('permisos',this)">Permisos / PRL</button>
+      <button class="tbb" onclick="sTab('replanteo',this)">Replanteo</button>
+      <button class="tbb" onclick="sTab('oc',this)">Obra Civil</button>
+      <button class="tbb" onclick="sTab('tendido',this)">Tendido</button>
+      <button class="tbb" onclick="sTab('empalmes',this)">Empalmes</button>
+      <button class="tbb" onclick="sTab('eco',this)">Economico</button>
+      <button class="tbb" onclick="sTab('docs',this)">Documentos</button>
+    </div>
+
+    <!-- DATOS BASE -->
+    <div class="tc active" id="tab-datos">
+      <div class="fs">
+        <div class="fst">Informacion general</div>
+        <div class="fg">
+          <div class="fi"><label>Codigo</label><input id="fd-cod" readonly></div>
+          <div class="fi"><label>Hijo Navision</label><input id="fd-nav"></div>
+          <div class="fi"><label>Promotor</label><input id="fd-pro"></div>
+          <div class="fi half"><label>Nombre del proyecto</label><input id="fd-nom"></div>
+          <div class="fi"><label>Municipio</label><input id="fd-mun"></div>
+          <div class="fi half"><label>Direccion</label><input id="fd-dir"></div>
+          <div class="fi"><label>Responsable provision</label><input id="fd-res"></div>
+          <div class="fi"><label>Fecha de entrada</label><input id="fd-fec" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Nodo de salida</label><input id="fd-nod"></div>
+        </div>
+        <div class="sr"><button class="bp" onclick="gDatos()">Guardar datos base</button></div>
+      </div>
+    </div>
+
+    <!-- ACCESOS -->
+    <div class="tc" id="tab-accesos">
+      <div class="fs">
+        <div class="fst">Accesos a nodos <button class="arb" onclick="addNodo()">+ Anadir nodo</button></div>
+        <div id="nlist"></div>
+      </div>
+      <div class="fs">
+        <div class="fst">Contacto del cliente</div>
+        <div class="fg">
+          <div class="fi"><label>Responsable / Contacto</label><input id="ac-con"></div>
+          <div class="fi"><label>Fecha de gestion</label><input id="ac-fg" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Fecha para ejecutar</label><input id="ac-fe" placeholder="dd/mm/aaaa"></div>
+        </div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar accesos</button></div>
+      </div>
+    </div>
+
+    <!-- PERMISOS PRL -->
+    <div class="tc" id="tab-permisos">
+      <div class="fs">
+        <div class="fst">Permisos y licencias <button class="arb" onclick="addPerm()">+ Anadir permiso</button></div>
+        <table class="dt"><thead><tr><th>Descripcion</th><th>Tipo</th><th>F.solicitud</th><th>F.aprobacion</th><th>Caducidad</th><th>Estado</th><th></th></tr></thead><tbody id="ptb"></tbody></table>
+      </div>
+      <div class="fs">
+        <div class="fst">Tecnicos asignados <button class="arb" onclick="addTec()">+ Anadir tecnico</button></div>
+        <div id="tlist"></div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar permisos / PRL</button></div>
+      </div>
+    </div>
+
+    <!-- REPLANTEO -->
+    <div class="tc" id="tab-replanteo">
+      <div class="fs">
+        <div class="fst">Replanteo OC <span id="roc-cod" style="font-weight:400;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;margin-left:8px;"></span></div>
+        <div class="fg">
+          <div class="fi"><label>Fecha solicitud</label><input id="roc-fs" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Fecha entrega</label><input id="roc-fe" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Estado</label><select id="roc-est"><option>Pendiente</option><option>Entregado</option><option>Validado</option></select></div>
+          <div class="fi"><label>Responsable</label><input id="roc-res"></div>
+          <div class="fi"><label>Doc. QPERA</label><input id="roc-doc" placeholder="Ref. documento..."></div>
+          <div class="fi full"><label>Comentario</label><input id="roc-com" placeholder="Observaciones..."></div>
+        </div>
+      </div>
+      <div class="fs">
+        <div class="fst">Replanteo Tendido <span id="rten-cod" style="font-weight:400;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;margin-left:8px;"></span></div>
+        <div class="fg">
+          <div class="fi"><label>Fecha solicitud</label><input id="rten-fs" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Fecha entrega</label><input id="rten-fe" placeholder="dd/mm/aaaa"></div>
+          <div class="fi"><label>Estado</label><select id="rten-est"><option>Pendiente</option><option>Entregado</option><option>Validado</option></select></div>
+          <div class="fi"><label>Responsable</label><input id="rten-res"></div>
+          <div class="fi"><label>Doc. QPERA</label><input id="rten-doc" placeholder="Ref. documento..."></div>
+          <div class="fi full"><label>Comentario</label><input id="rten-com" placeholder="Observaciones..."></div>
+        </div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar replanteo</button></div>
+      </div>
+    </div>
+
+    <!-- OBRA CIVIL -->
+    <div class="tc" id="tab-oc">
+      <div class="fs">
+        <div class="fg" style="margin-bottom:14px;">
+          <div class="fi"><label>Encargo</label><input id="oc-enc"></div>
+          <div class="fi"><label>Presupuesto inicial (EUR)</label><input id="oc-pre" placeholder="0,00"></div>
+        </div>
+        <div class="mk" id="oc-mk">
+          <div class="mki"><div class="mkl">Total elementos</div><div class="mkv">0</div></div>
+          <div class="mki"><div class="mkl">Ejecutados</div><div class="mkv" style="color:var(--green)">0</div></div>
+          <div class="mki"><div class="mkl">Pendientes</div><div class="mkv" style="color:var(--amber)">0</div></div>
+        </div>
+        <div class="fst">Elementos <button class="arb" onclick="addEOC()">+ Anadir elemento</button></div>
+        <table class="dt"><thead><tr><th>Elemento</th><th style="width:130px;">Tipo</th><th style="width:70px;text-align:center;">Proy.</th><th style="width:70px;text-align:center;">Nueva</th><th style="width:50px;text-align:center;">Ud</th><th style="width:110px;">Estado</th><th style="width:30px;"></th></tr></thead><tbody id="octb"></tbody></table>
+        <div class="fst" style="margin-top:14px;">Materiales <button class="arb" onclick="addM('ocmtb')">+ Anadir material</button></div>
+        <table class="dt"><thead><tr><th>Material</th><th style="width:70px;text-align:center;">Proy.</th><th style="width:70px;text-align:center;">Nueva</th><th style="width:50px;text-align:center;">Ud</th><th style="width:110px;">Estado</th><th style="width:30px;"></th></tr></thead><tbody id="ocmtb"></tbody></table>
+        <div class="dck"><span class="dcl">Documentacion final</span><div class="dcbs"><button class="dcb pen" id="oc-dp" onclick="dck('oc','pen')">Pendiente</button><button class="dcb" id="oc-dok" onclick="dck('oc','ok')">Entregado</button></div></div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar obra civil</button></div>
+      </div>
+    </div>
+
+    <!-- TENDIDO -->
+    <div class="tc" id="tab-tendido">
+      <div class="fs">
+        <div class="fg" style="margin-bottom:14px;">
+          <div class="fi"><label>Encargo</label><input id="ten-enc"></div>
+          <div class="fi"><label>Presupuesto inicial (EUR)</label><input id="ten-pre" placeholder="0,00"></div>
+          <div class="fi"><label>Origen</label><input id="ten-ori"></div>
+          <div class="fi"><label>Final</label><input id="ten-fin"></div>
+          <div class="fi"><label>Accesos (nodos / cliente)</label><input id="ten-acc"></div>
+          <div class="fi"><label>Dias de acceso</label><input id="ten-dia" placeholder="0"></div>
+          <div class="fi"><label>Metros proyectados</label><input id="ten-mp" placeholder="0"></div>
+          <div class="fi"><label>Metros nuevos</label><input id="ten-mn" placeholder="0"></div>
+        </div>
+        <div class="fst">Medidas OTDR (tramos) <button class="arb" onclick="addTra()">+ Anadir tramo</button></div>
+        <table class="dt"><thead><tr><th>Tramo</th><th style="width:150px;text-align:center;">Longitud (m)</th><th style="width:30px;"></th></tr></thead><tbody id="tratb"></tbody></table>
+        <div class="fst" style="margin-top:14px;">Materiales <button class="arb" onclick="addM('tenmtb')">+ Anadir material</button></div>
+        <table class="dt"><thead><tr><th>Material</th><th style="width:70px;text-align:center;">Proy.</th><th style="width:70px;text-align:center;">Nueva</th><th style="width:50px;text-align:center;">Ud</th><th style="width:110px;">Estado</th><th style="width:30px;"></th></tr></thead><tbody id="tenmtb"></tbody></table>
+        <div class="dck"><span class="dcl">Documentacion final</span><div class="dcbs"><button class="dcb pen" id="ten-dp" onclick="dck('ten','pen')">Pendiente</button><button class="dcb" id="ten-dok" onclick="dck('ten','ok')">Entregado</button></div></div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar tendido</button></div>
+      </div>
+    </div>
+
+    <!-- EMPALMES -->
+    <div class="tc" id="tab-empalmes">
+      <div class="fs">
+        <div class="fg" style="margin-bottom:14px;">
+          <div class="fi"><label>Encargo</label><input id="emp-enc"></div>
+          <div class="fi"><label>Presupuesto inicial (EUR)</label><input id="emp-pre" placeholder="0,00"></div>
+        </div>
+        <div class="mk" id="emp-mk">
+          <div class="mki"><div class="mkl">Total empalmes</div><div class="mkv">0</div></div>
+          <div class="mki"><div class="mkl">Realizados</div><div class="mkv" style="color:var(--green)">0</div></div>
+          <div class="mki"><div class="mkl">Pendientes</div><div class="mkv" style="color:var(--amber)">0</div></div>
+        </div>
+        <div class="fst">Empalmes <button class="arb" onclick="addEmp()">+ Anadir empalme</button></div>
+        <table class="dt"><thead><tr><th style="width:30px;">Num</th><th>Descripcion / Ubicacion</th><th style="width:90px;">Tipo</th><th style="width:60px;text-align:center;">Fibras</th><th style="width:70px;text-align:center;">Proy.</th><th style="width:70px;text-align:center;">Nueva</th><th style="width:110px;">Estado</th><th style="width:30px;"></th></tr></thead><tbody id="emtb"></tbody></table>
+        <div class="fst" style="margin-top:14px;">Materiales <button class="arb" onclick="addM('empmtb')">+ Anadir material</button></div>
+        <table class="dt"><thead><tr><th>Material</th><th style="width:70px;text-align:center;">Proy.</th><th style="width:70px;text-align:center;">Nueva</th><th style="width:50px;text-align:center;">Ud</th><th style="width:110px;">Estado</th><th style="width:30px;"></th></tr></thead><tbody id="empmtb"></tbody></table>
+        <div class="dck"><span class="dcl">Documentacion final</span><div class="dcbs"><button class="dcb pen" id="emp-dp" onclick="dck('emp','pen')">Pendiente</button><button class="dcb" id="emp-dok" onclick="dck('emp','ok')">Entregado</button></div></div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar empalmes</button></div>
+      </div>
+    </div>
+
+    <!-- ECONOMICO -->
+    <div class="tc" id="tab-eco">
+      <div class="fs">
+        <table class="dt">
+          <thead><tr><th>Encargo</th><th style="width:70px;">Tipo</th><th style="width:150px;text-align:right;">Presupuesto (EUR)</th><th style="width:150px;text-align:right;">Certificacion (EUR)</th><th style="width:130px;text-align:right;">Pendiente (EUR)</th></tr></thead>
+          <tbody id="ecotb"></tbody>
+          <tfoot><tr style="font-weight:600;background:var(--bg);"><td colspan="2" style="padding:8px 10px;">Total proyecto</td><td style="text-align:right;padding:8px 10px;" id="etp">-</td><td style="text-align:right;padding:8px 10px;" id="etc">-</td><td style="text-align:right;padding:8px 10px;color:var(--amber);" id="etpen">-</td></tr></tfoot>
+        </table>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar economico</button></div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div class="tc" id="tab-docs">
+      <div class="fs">
+        <div class="fst">Enlace SharePoint</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Enlaza la carpeta de SharePoint con todos los documentos de este encargo.</p>
+        <div style="display:flex;gap:8px;">
+          <input id="sp" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;" placeholder="https://sharepoint.com/...">
+          <button class="bp" onclick="if(document.getElementById('sp').value)window.open(document.getElementById('sp').value,'_blank')">Abrir</button>
+        </div>
+        <div class="sr"><button class="bp" onclick="gTodo()">Guardar enlace</button></div>
+      </div>
+    </div>
+
+  </div><!-- fin vistaEncargo -->
+
+</div><!-- fin app -->
+
+<!-- MODAL PROYECTO -->
+<div class="mo" id="mop">
+  <div class="modal">
+    <h2>Nuevo proyecto</h2>
+    <div class="mg">
+      <div class="fg2 full"><label>Codigo *</label><input id="mp-cod" placeholder="XM08009v_006"></div>
+      <div class="fg2 full"><label>Nombre *</label><input id="mp-nom" placeholder="SE 100Mb 65.4..."></div>
+      <div class="fg2"><label>Hijo Navision</label><input id="mp-nav"></div>
+      <div class="fg2"><label>Promotor</label><input id="mp-pro" value="XOC"></div>
+      <div class="fg2"><label>Municipio</label><input id="mp-mun"></div>
+      <div class="fg2"><label>Nodo de salida</label><input id="mp-nod"></div>
+      <div class="fg2 full"><label>Direccion</label><input id="mp-dir"></div>
+      <div class="fg2"><label>Responsable</label><input id="mp-res"></div>
+      <div class="fg2"><label>Fecha entrada</label><input id="mp-fec" placeholder="dd/mm/aaaa"></div>
+    </div>
+    <div class="ma"><button class="bg" onclick="cM()">Cancelar</button><button class="bp" onclick="crearP()">Crear proyecto</button></div>
+  </div>
+</div>
+
+<!-- MODAL ENCARGO -->
+<div class="mo" id="moe">
+  <div class="modal">
+    <h2>Nuevo encargo</h2>
+    <div class="mg">
+      <div class="fg2"><label>Numero ENC *</label><input id="me-num" placeholder="ENC01"></div>
+      <div class="fg2"><label>Tipo *</label><select id="me-tip"><option value="ING">ING - Ingenieria / Replanteo</option><option value="OT">OT - Ruta fibra optica</option><option value="DESP">DESP - Despliegue</option><option value="DF">DF - Documentacion final</option></select></div>
+      <div class="fg2"><label>Responsable</label><input id="me-res"></div>
+      <div class="fg2"><label>Fecha fin</label><input id="me-fec" placeholder="dd/mm/aaaa"></div>
+    </div>
+    <div class="ma"><button class="bg" onclick="cM()">Cancelar</button><button class="bp" onclick="crearE()">Crear encargo</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FC = { apiKey:"AIzaSyBuTXcCfDXL49tuhSfcFYwWOnRXQDV-ED0", authDomain:"semi-fibra-optica.firebaseapp.com", projectId:"semi-fibra-optica", storageBucket:"semi-fibra-optica.firebasestorage.app", messagingSenderId:"1039249755172", appId:"1:1039249755172:web:6e0c0ce8934e93f0c85cb1" };
+const fApp = initializeApp(FC);
+const auth = getAuth(fApp);
+const db   = getFirestore(fApp);
+
+let proyectos=[], encActual=null, proyActual=null, cusr=null;
+let fil={ e:'t', t:'t' };
+
+// AUTH
+window.doLogin = async function(){
+  const em=document.getElementById('lemail').value.trim(), pw=document.getElementById('lpass').value;
+  const btn=document.getElementById('lbtn'), err=document.getElementById('le');
+  if(!em||!pw){err.textContent='Introduce email y contrasena.';return;}
+  btn.disabled=true; btn.textContent='Conectando...'; err.textContent='';
+  try{await signInWithEmailAndPassword(auth,em,pw);}
+  catch(e){err.textContent=tradErr(e.code);btn.disabled=false;btn.textContent='Entrar';}
+};
+window.doLogout=async function(){await signOut(auth);toast('Sesion cerrada');};
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('ls').style.display!=='none')doLogin();});
+
+onAuthStateChanged(auth,async u=>{
+  if(u){
+    cusr=u;
+    document.getElementById('ls').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('app').style.flexDirection='column';
+    document.getElementById('uem').textContent=u.email;
+    document.getElementById('uav').textContent=u.email.substring(0,2).toUpperCase();
+    cargar();
+  } else {
+    cusr=null;
+    document.getElementById('ls').style.display='flex';
+    document.getElementById('app').style.display='none';
+  }
+});
+
+// DATOS
+async function cargar(){
+  sync(true);
+  try{
+    onSnapshot(collection(db,'proyectos_xoc'),snap=>{
+      proyectos=[];
+      snap.forEach(d=>proyectos.push({id:d.id,...d.data()}));
+      if(!proyectos.length) demo();
+      rD(); rP(); sync(false);
+    });
+  } catch(e){ demo(); rD(); rP(); sync(false); toast('Modo sin conexion'); }
+}
+
+function demo(){
+  proyectos=[
+    {id:'p1',codigo:'XM08009v_006',nombre:'SE 100Mb 65.4 C. Conserv Argentona-Bracons',navision:'M30645756/052',promotor:'XOC',municipio:'Argentona',direccion:'Carretera C-60, km 12',responsable:'Sergio Paloma',fecha:'08/04/2026',nodo:'PEDR-4375',cliente:'XOC',
+     encargos:[
+       {id:'e1',num:'ENC01',tipo:'ING',estadoQ:'VALIDAT',estadoS:'Replanteo',responsable:'Sergio Paloma',fecha:'08/04/2026',prog:20,datos:{}},
+       {id:'e2',num:'ENC03',tipo:'DF',estadoQ:'EN CURS',estadoS:'Presupuesto',responsable:'Sergio Paloma',fecha:'30/05/2026',prog:0,datos:{}},
+       {id:'e3',num:'ENC04',tipo:'OT',estadoQ:'EN CURS',estadoS:'En ejecucion',responsable:'Sergio Paloma',fecha:'30/05/2026',prog:60,datos:{}},
+       {id:'e4',num:'ENC05',tipo:'DESP',estadoQ:'EN CURS',estadoS:'En ejecucion',responsable:'Sergio Paloma',fecha:'30/05/2026',prog:45,datos:{}}
+     ],
+     comentarios:[{autor:'Sergio Paloma',etq:'ENC04',txt:'OT preparada. Treballs assignats. Pendent permis node 4.',fec:'19/04/2026 09:14'},{autor:'Martin Dopazo',etq:'Incidencia',txt:'ING pendiente de validar por cliente. Obra parada.',fec:'01/04/2026 11:30'}]
+    },
+    {id:'p2',codigo:'XM43148m_010',nombre:'SE Troncal EMXP PEDR-OXIGEN',navision:'M30645756/151',promotor:'XOC',municipio:'Tarragona',direccion:'Av. Roma 45',responsable:'Raul Najarano',fecha:'16/03/2026',nodo:'OXIGEN-4319',cliente:'XOC',
+     encargos:[{id:'e5',num:'ENC04',tipo:'OT',estadoQ:'PDT DISSENY',estadoS:'En ejecucion',responsable:'Raul Najarano',fecha:'30/04/2026',prog:65,datos:{}},{id:'e6',num:'ENC02',tipo:'DESP',estadoQ:'EN CURS',estadoS:'Finalizado',responsable:'Raul Najarano',fecha:'30/04/2026',prog:100,datos:{}}],
+     comentarios:[]
+    },
+    {id:'p3',codigo:'XM10401a',nombre:'Nodo Secundari Terrassa',navision:'NAV-2024-008',promotor:'XOC',municipio:'Terrassa',direccion:'C/ Nou 12',responsable:'P. Ruiz',fecha:'15/12/2024',nodo:'TERR-2021',cliente:'XOC',
+     encargos:[{id:'e7',num:'ENC07',tipo:'OT',estadoQ:'EN CURS',estadoS:'En ejecucion',responsable:'P. Ruiz',fecha:'26/04/2026',prog:55,datos:{}}],
+     comentarios:[]
+    }
+  ];
+}
+
+// FILTROS
+window.sf=function(k,v,btn){
+  fil[k]=v;
+  const fb=btn.closest('.fb');
+  fb.querySelectorAll('.pill').forEach(p=>{
+    const t=p.textContent.trim();
+    if(k==='e'&&['Todos','En ejecucion','Replanteo','Finalizado'].includes(t)) p.classList.remove('active');
+    if(k==='t'&&['Todos','ING','OT','DESP','DF'].includes(t)) p.classList.remove('active');
+  });
+  btn.classList.add('active'); rD();
+};
+
+function getEncs(){
+  const q=(document.getElementById('si')?.value||'').toLowerCase();
+  let r=[];
+  proyectos.forEach(p=>{
+    (p.encargos||[]).forEach(e=>{
+      if(fil.e!=='t'&&e.estadoS!==fil.e) return;
+      if(fil.t!=='t'&&e.tipo!==fil.t) return;
+      if(q&&!p.codigo.toLowerCase().includes(q)&&!p.nombre.toLowerCase().includes(q)&&!(p.municipio||'').toLowerCase().includes(q)&&!e.num.toLowerCase().includes(q)) return;
+      r.push({...e,proy:p});
+    });
+  });
+  return r;
+}
+
+// DASHBOARD
+window.rD=function(){
+  const encs=getEncs();
+  const ing=encs.filter(e=>e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado').length;
+  const activos=encs.filter(e=>e.estadoS==='En ejecucion');
+  const ejm=activos.length?Math.round(activos.reduce((a,e)=>a+(e.prog||0),0)/activos.length):0;
+  const alerP=new Set(encs.filter(e=>e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado').map(e=>e.proy.id));
+  document.getElementById('k1').textContent=encs.length;
+  document.getElementById('k2').textContent='-';
+  document.getElementById('k3').textContent=ing;
+  document.getElementById('k4').textContent=ejm+'%';
+  document.getElementById('k5').textContent=alerP.size;
+
+  const estados=['En ejecucion','Replanteo','Presupuesto','Finalizado','Certificado'];
+  const col={'En ejecucion':'#1A5CFF','Replanteo':'#D85A30','Presupuesto':'#EF9F27','Finalizado':'#1D9E75','Certificado':'#7F77DD'};
+  const mx=Math.max(...estados.map(s=>encs.filter(e=>e.estadoS===s).length),1);
+  document.getElementById('ebar').innerHTML=estados.map(s=>{
+    const n=encs.filter(e=>e.estadoS===s).length;
+    return `<div class="br"><span class="bn">${s}</span><div class="bw"><div class="bf" style="width:${Math.round(n/mx*100)}%;background:${col[s]}"></div></div><span class="bnum">${n}</span></div>`;
+  }).join('');
+
+  const als=[];
+  encs.filter(e=>e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado').forEach(e=>als.push({c:'#D85A30',t:`${e.proy.codigo} ${e.num} - ING sin resolver`,m:'Obra parada'}));
+  encs.filter(e=>e.estadoS==='Finalizado').forEach(e=>als.push({c:'#EF9F27',t:`${e.proy.codigo} ${e.num} - finalizado sin certificar`,m:'Pendiente certificacion'}));
+  document.getElementById('eal').innerHTML=als.slice(0,5).map(a=>`<div class="ar"><div class="ad" style="background:${a.c}"></div><div><div class="at">${a.t}</div><div class="am">${a.m}</div></div></div>`).join('')||'<div style="font-size:12px;color:var(--muted);padding:8px 0;">Sin alertas activas</div>';
+
+  document.getElementById('erec').innerHTML=encs.slice(0,6).map(e=>
+    `<div class="er" style="cursor:pointer" onclick="aE('${e.proy.id}','${e.id}')">
+      <div><div class="ecode">${e.proy.codigo} ${e.num}</div><div class="ename">${e.proy.nombre}</div></div>
+      <div class="err"><span class="tag t${e.tipo.toLowerCase()}">${e.tipo}</span><span class="tag t${esc(e.estadoS)}">${e.estadoS}</span><span style="font-size:11px;font-weight:500;color:var(--muted);font-family:'DM Mono',monospace;min-width:32px;text-align:right;">${e.prog||0}%</span></div>
+    </div>`
+  ).join('');
+};
+
+// PROYECTOS LISTA
+window.rP=function(){
+  const q=(document.getElementById('spr')?.value||'').toLowerCase();
+  const f=proyectos.filter(p=>!q||p.codigo.toLowerCase().includes(q)||p.nombre.toLowerCase().includes(q)||(p.municipio||'').toLowerCase().includes(q));
+  document.getElementById('stp').textContent=`${f.length} proyectos`;
+  document.getElementById('pgrid').innerHTML=f.map(p=>{
+    const en=p.encargos||[];
+    const prg=en.length?Math.round(en.reduce((a,e)=>a+(e.prog||0),0)/en.length):0;
+    const col=prg>=100?'#00A878':prg>=60?'#1A5CFF':prg>=30?'#E8A20A':'#ccc';
+    const ia=en.some(e=>e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado');
+    return `<div class="pc${ia?' ia':''}" onclick="aP('${p.id}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+        <div><div class="pco">${p.codigo}</div><div class="pn">${p.nombre}</div></div>
+        <span class="tag tx">XOC</span>
+      </div>
+      <div class="pm">${p.municipio||'-'} · ${p.responsable||'-'} · ${en.length} encargos</div>
+      <div class="pt">${en.map(e=>`<span class="tag t${e.tipo.toLowerCase()}">${e.num} ${e.tipo}</span>`).join('')}</div>
+      <div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;"><span>Progreso</span><span style="font-weight:600;color:${col}">${prg}%</span></div><div class="prb"><div class="prf" style="width:${prg}%;background:${col}"></div></div></div>
+    </div>`;
+  }).join('');
+};
+
+// NAVEGACION
+window.irVista=function(v,btn){
+  document.querySelectorAll('.v').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ve').style.display='none';
+  document.getElementById('vp').style.display='none';
+  document.getElementById('vista'+v).classList.add('active');
+  btn.classList.add('active');
+  if(v==='P') rP();
+};
+
+window.aP=function(id){
+  proyActual=proyectos.find(p=>p.id===id);
+  if(!proyActual) return;
+  document.querySelectorAll('.v').forEach(v=>v.classList.remove('active'));
+  document.getElementById('ve').style.display='none';
+  document.getElementById('vp').style.display='block';
+  set('bcp',proyActual.codigo);
+  set('pco',proyActual.codigo);
+  set('pno',proyActual.nombre);
+  set('pmu',[proyActual.municipio,proyActual.direccion].filter(Boolean).join(' · '));
+  set('pnav',proyActual.navision||'-');
+  set('ppro',proyActual.promotor||'-');
+  set('pres',proyActual.responsable||'-');
+  set('pfec',proyActual.fecha||'-');
+  set('pnod',proyActual.nodo||'-');
+  const en=proyActual.encargos||[];
+  const ia=en.some(e=>e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado');
+  const al=document.getElementById('ialert');
+  al.style.display=ia?'flex':'none';
+  if(ia) set('ialertT','ING pendiente - la obra esta parada hasta completar el replanteo de ingenieria');
+  document.getElementById('ecards').innerHTML=en.map(e=>{
+    const col=e.prog>=100?'#00A878':e.prog>=60?'#1A5CFF':e.prog>=30?'#E8A20A':'#ccc';
+    return `<div class="ec${e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado'?' ia':''}" onclick="aE('${proyActual.id}','${e.id}')">
+      <div class="ect"><div><div class="eci">${proyActual.codigo} ${e.num}</div><div class="ecn">${tnombre(e.tipo)}</div></div><span class="tag t${e.tipo.toLowerCase()}">${e.tipo}</span></div>
+      <div class="ecr2"><div class="ecrl"><span class="ecll">Responsable</span><span class="eclv">${e.responsable||'-'}</span></div><div class="ecrl"><span class="ecll">Fecha fin</span><span class="eclv">${e.fecha||'-'}</span></div></div>
+      <div class="ee"><span class="eel">QPERA</span><span class="tag tp" style="font-size:10px;">${e.estadoQ||'-'}</span><span class="eel" style="margin-left:6px;">SEMI</span><span class="tag t${esc(e.estadoS)}">${e.estadoS||'-'}</span></div>
+      <div class="prb" style="margin-top:8px;"><div class="prf" style="width:${e.prog||0}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+  rComm(proyActual.comentarios||[]);
+};
+
+window.aE=function(pId,eId){
+  proyActual=proyectos.find(p=>p.id===pId);
+  if(!proyActual) return;
+  encActual=(proyActual.encargos||[]).find(e=>e.id===eId);
+  if(!encActual) return;
+  document.querySelectorAll('.v').forEach(v=>v.classList.remove('active'));
+  document.getElementById('vp').style.display='none';
+  document.getElementById('ve').style.display='block';
+  set('bcp2',proyActual.codigo);
+  set('bce',`${encActual.num} ${encActual.tipo}`);
+  set('ehco',`${proyActual.codigo} · ${encActual.num}`);
+  set('ehno',`${tnombre(encActual.tipo)} - ${proyActual.nombre}`);
+  val('eqp',encActual.estadoQ||'EN CURS');
+  val('esemi',encActual.estadoS||'En ejecucion');
+  val('fd-cod',`${proyActual.codigo} ${encActual.num}`);
+  val('fd-nav',proyActual.navision||'');
+  val('fd-pro',proyActual.promotor||'');
+  val('fd-nom',proyActual.nombre||'');
+  val('fd-mun',proyActual.municipio||'');
+  val('fd-dir',proyActual.direccion||'');
+  val('fd-res',proyActual.responsable||'');
+  val('fd-fec',proyActual.fecha||'');
+  val('fd-nod',proyActual.nodo||'');
+  const cod=`${proyActual.codigo} ${encActual.num}`;
+  set('roc-cod',cod); set('rten-cod',cod);
+  val('oc-enc',cod); val('ten-enc',cod); val('emp-enc',cod);
+  ['octb','ocmtb','tenmtb','tratb','emtb','empmtb','ptb'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('nlist').innerHTML='';
+  document.getElementById('tlist').innerHTML='';
+  rEco();
+  sTab('datos',document.querySelector('.tbb'));
+};
+
+window.vLista=function(){
+  document.getElementById('vp').style.display='none';
+  document.getElementById('ve').style.display='none';
+  irVista('P',document.querySelectorAll('.nb')[1]);
+};
+window.vProy=function(){
+  document.getElementById('ve').style.display='none';
+  if(proyActual) aP(proyActual.id);
+};
+
+// TABS
+window.sTab=function(id,btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tbb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='eco') rEco();
+};
+
+// COMENTARIOS
+function rComm(lista){
+  const ec={'Incidencia':'var(--red)','Replanteo':'var(--amber)','General':'var(--muted)'};
+  const eb={'Incidencia':'var(--rl)','Replanteo':'var(--aml)','General':'var(--bg)'};
+  document.getElementById('clist').innerHTML=(lista||[]).map(c=>{
+    const in2=(c.autor||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const tc2=ec[c.etq]||'var(--accent)'; const tb2=eb[c.etq]||'var(--al)';
+    return `<div class="ci"><div class="cav">${in2}</div><div class="cb"><div class="cm"><b>${c.autor}</b> · ${c.fec} <span style="background:${tb2};color:${tc2};font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:4px;">${c.etq}</span></div><div class="ctx">${c.txt}</div></div></div>`;
+  }).join('')||'<div style="font-size:12px;color:var(--muted);padding:8px 0;">Sin comentarios aun.</div>';
+}
+
+window.enviarC=async function(){
+  const txt=document.getElementById('ctxt').value.trim();
+  const autor=document.getElementById('cautor').value.trim()||(cusr?.email||'Usuario');
+  const etq=document.getElementById('cetq').value;
+  if(!txt) return;
+  const now=new Date();
+  const fec=now.toLocaleDateString('es-ES')+' '+now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  if(!proyActual.comentarios) proyActual.comentarios=[];
+  proyActual.comentarios.unshift({autor,etq,txt,fec});
+  rComm(proyActual.comentarios);
+  document.getElementById('ctxt').value='';
+  try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{comentarios:proyActual.comentarios});toast('Comentario guardado');}
+  catch(e){toast('Guardado localmente');}
+};
+
+// CREAR
+window.abrirMP=function(){document.getElementById('mop').classList.add('open');};
+window.crearP=async function(){
+  const co=document.getElementById('mp-cod').value.trim(), no=document.getElementById('mp-nom').value.trim();
+  if(!co||!no){toast('Codigo y nombre son obligatorios');return;}
+  const nw={codigo:co,nombre:no,navision:document.getElementById('mp-nav').value,promotor:document.getElementById('mp-pro').value||'XOC',municipio:document.getElementById('mp-mun').value,nodo:document.getElementById('mp-nod').value,direccion:document.getElementById('mp-dir').value,responsable:document.getElementById('mp-res').value,fecha:document.getElementById('mp-fec').value,cliente:'XOC',encargos:[],comentarios:[],createdAt:serverTimestamp()};
+  sync(true);
+  try{const r=await addDoc(collection(db,'proyectos_xoc'),nw);proyectos.unshift({id:r.id,...nw});toast('Proyecto creado');}
+  catch(e){nw.id='local_'+Date.now();proyectos.unshift(nw);toast('Guardado localmente');}
+  sync(false);cM();rP();rD();
+};
+
+window.abrirME=function(){document.getElementById('moe').classList.add('open');};
+window.crearE=async function(){
+  const num=document.getElementById('me-num').value.trim(), tipo=document.getElementById('me-tip').value;
+  if(!num||!proyActual) return;
+  const ne={id:'enc_'+Date.now(),num,tipo,responsable:document.getElementById('me-res').value,fecha:document.getElementById('me-fec').value,estadoQ:'EN CURS',estadoS:'Creado',prog:0,datos:{}};
+  if(!proyActual.encargos) proyActual.encargos=[];
+  proyActual.encargos.push(ne);
+  try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{encargos:proyActual.encargos});toast('Encargo creado');}
+  catch(e){toast('Guardado localmente');}
+  cM();aP(proyActual.id);
+};
+
+// GUARDAR
+window.gEst=async function(){
+  if(!encActual||!proyActual) return;
+  encActual.estadoQ=document.getElementById('eqp').value;
+  encActual.estadoS=document.getElementById('esemi').value;
+  try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{encargos:proyActual.encargos});toast('Estado actualizado');}
+  catch(e){}
+};
+window.gDatos=async function(){
+  if(!proyActual) return;
+  Object.assign(proyActual,{navision:v('fd-nav'),promotor:v('fd-pro'),nombre:v('fd-nom'),municipio:v('fd-mun'),direccion:v('fd-dir'),responsable:v('fd-res'),fecha:v('fd-fec'),nodo:v('fd-nod')});
+  try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),proyActual);toast('Datos base guardados');}
+  catch(e){toast('Error al guardar');}
+};
+window.gTodo=async function(){
+  if(!proyActual) return;
+  sync(true);
+  try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{encargos:proyActual.encargos});toast('Guardado correctamente');}
+  catch(e){toast('Error al guardar');}
+  sync(false);
+};
+
+// ACCESOS
+window.addNodo=function(){
+  const d=document.createElement('div');
+  d.className='fs';d.style.marginBottom='10px';
+  d.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px;"><div class="fi"><label>Nodo</label><input placeholder="PEDR-4375"></div><div class="fi"><label>Fecha desde</label><input placeholder="dd/mm/aaaa"></div><div class="fi"><label>Fecha hasta</label><input placeholder="dd/mm/aaaa"></div><div class="fi"><label>Estado</label><select style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;"><option>Pendiente</option><option>Activo</option><option>Caducado</option></select></div><div class="fi half"><label>Direccion</label><input placeholder="Direccion..."></div></div><div style="text-align:right;"><button class="db2" onclick="this.closest('.fs').remove()">Eliminar nodo</button></div>`;
+  document.getElementById('nlist').appendChild(d);
+};
+
+// PERMISOS
+window.addPerm=function(){
+  const tb=document.getElementById('ptb'), tr=document.createElement('tr');
+  tr.innerHTML=`<td><input placeholder="Descripcion..." style="width:100%;"></td><td><select class="tds"><option>Licencia de obras</option><option>PRL</option><option>Permiso via publica</option><option>Otro</option></select></td><td><input placeholder="dd/mm" style="width:80px;"></td><td><input placeholder="dd/mm" style="width:80px;"></td><td><input placeholder="dd/mm" style="width:80px;"></td><td><select class="tds"><option>En tramitacion</option><option>Aprobado</option><option>Denegado</option></select></td><td><button class="db2" onclick="this.closest('tr').remove()">X</button></td>`;
+  tb.appendChild(tr);
+};
+window.addTec=function(){
+  const d=document.createElement('div');
+  d.className='tec';d.style.marginBottom='6px';
+  d.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;flex:1;"><input placeholder="Nombre" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;"><input placeholder="DNI" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;"><input placeholder="Telefono" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;"><select style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;"><option>Apto</option><option>Pdt. documentacion</option><option>No apto</option></select></div><button class="db2" onclick="this.closest('.tec').remove()">X</button>`;
+  document.getElementById('tlist').appendChild(d);
+};
+
+// OC
+window.addEOC=function(){
+  const tb=document.getElementById('octb'), tr=document.createElement('tr');
+  tr.innerHTML=`<td><input placeholder="Elemento..." style="width:100%;"></td><td><select class="tds"><option>Metros de zanja</option><option>Canalizacion</option><option>Arqueta</option><option>Reposicion pavimento</option><option>Otro</option></select></td><td style="text-align:center"><input placeholder="0" style="width:55px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><input placeholder="0" style="width:55px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><select class="tds" style="width:44px;"><option>m</option><option>ud</option><option>m2</option></select></td><td><select class="tds" onchange="kOC()"><option>Pendiente</option><option>En curso</option><option>Ejecutado</option></select></td><td><button class="db2" onclick="this.closest('tr').remove();kOC()">X</button></td>`;
+  tb.appendChild(tr); kOC();
+};
+window.kOC=function(){
+  const r=document.getElementById('octb').querySelectorAll('tr'), t=r.length, e=[...r].filter(x=>x.querySelector('select')?.value==='Ejecutado').length;
+  document.getElementById('oc-mk').innerHTML=`<div class="mki"><div class="mkl">Total elementos</div><div class="mkv">${t}</div></div><div class="mki"><div class="mkl">Ejecutados</div><div class="mkv" style="color:var(--green)">${e}</div></div><div class="mki"><div class="mkl">Pendientes</div><div class="mkv" style="color:var(--amber)">${t-e}</div></div>`;
+};
+
+window.addM=function(tbId){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input placeholder="Material..." style="width:100%;"></td><td style="text-align:center"><input placeholder="0" style="width:55px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><input placeholder="0" style="width:55px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><select class="tds" style="width:44px;"><option>m</option><option>ud</option><option>m2</option></select></td><td><select class="tds"><option>PDT pedir</option><option>Pedido</option><option>Recibido</option><option>Instalado</option></select></td><td><button class="db2" onclick="this.closest('tr').remove()">X</button></td>`;
+  document.getElementById(tbId).appendChild(tr);
+};
+
+window.addTra=function(){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input placeholder="Tramo..." style="width:100%;"></td><td style="text-align:center"><input placeholder="0" style="width:120px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:'DM Mono',monospace;background:var(--bg);outline:none;"></td><td><button class="db2" onclick="this.closest('tr').remove()">X</button></td>`;
+  document.getElementById('tratb').appendChild(tr);
+};
+
+window.addEmp=function(){
+  const tb=document.getElementById('emtb'), n=tb.rows.length+1, tr=document.createElement('tr');
+  tr.innerHTML=`<td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;">${n}</td><td><input placeholder="Descripcion / Ubicacion..." style="width:100%;"></td><td><select class="tds"><option>Nodo</option><option>Empalme</option></select></td><td style="text-align:center"><input placeholder="8" style="width:45px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><input placeholder="0" style="width:50px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td style="text-align:center"><input placeholder="0" style="width:50px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:var(--bg);outline:none;"></td><td><select class="tds" onchange="kEmp()"><option>Pendiente</option><option>En curso</option><option>Realizado</option></select></td><td><button class="db2" onclick="this.closest('tr').remove();kEmp()">X</button></td>`;
+  tb.appendChild(tr); kEmp();
+};
+window.kEmp=function(){
+  const r=document.getElementById('emtb').querySelectorAll('tr'), t=r.length, e=[...r].filter(x=>x.querySelector('select')?.value==='Realizado').length;
+  document.getElementById('emp-mk').innerHTML=`<div class="mki"><div class="mkl">Total empalmes</div><div class="mkv">${t}</div></div><div class="mki"><div class="mkl">Realizados</div><div class="mkv" style="color:var(--green)">${e}</div></div><div class="mki"><div class="mkl">Pendientes</div><div class="mkv" style="color:var(--amber)">${t-e}</div></div>`;
+};
+
+window.dck=function(px,val){
+  document.getElementById(`${px}-dp`).className='dcb'+(val==='pen'?' pen':'');
+  document.getElementById(`${px}-dok`).className='dcb'+(val==='ok'?' ok':'');
+};
+
+function rEco(){
+  if(!proyActual) return;
+  const tb=document.getElementById('ecotb'); tb.innerHTML='';
+  let tp=0, tc=0;
+  (proyActual.encargos||[]).forEach(e=>{
+    const d=e.datos||{};
+    const p=parseFloat((d.pre||'').replace(',','.').replace(/[^\d.]/g,''))||0;
+    const c=parseFloat((d.cert||'').replace(',','.').replace(/[^\d.]/g,''))||0;
+    tp+=p; tc+=c;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-family:'DM Mono',monospace;font-size:11px;">${proyActual.codigo} ${e.num}</td><td><span class="tag t${e.tipo.toLowerCase()}">${e.tipo}</span></td><td style="text-align:right;"><input value="${p?p.toLocaleString('es-ES',{minimumFractionDigits:2}):''}" placeholder="0,00" style="width:130px;text-align:right;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:'DM Mono',monospace;background:var(--bg);outline:none;"></td><td style="text-align:right;"><input value="${c?c.toLocaleString('es-ES',{minimumFractionDigits:2}):''}" placeholder="0,00" style="width:130px;text-align:right;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:'DM Mono',monospace;background:var(--bg);outline:none;"></td><td style="text-align:right;font-weight:500;color:${(p-c)>0?'var(--amber)':'var(--green)'};">${(p-c).toLocaleString('es-ES',{minimumFractionDigits:2})} EUR</td>`;
+    tb.appendChild(tr);
+  });
+  set('etp',tp.toLocaleString('es-ES',{minimumFractionDigits:2})+' EUR');
+  set('etc',tc.toLocaleString('es-ES',{minimumFractionDigits:2})+' EUR');
+  set('etpen',(tp-tc).toLocaleString('es-ES',{minimumFractionDigits:2})+' EUR');
+}
+
+// MODALES
+window.cM=function(){document.querySelectorAll('.mo').forEach(m=>m.classList.remove('open'));};
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)cM();}));
+
+// UTILS
+function esc(e){return {'En ejecucion':'ej','Finalizado':'fin','Certificado':'ce','Replanteo':'rp','Presupuesto':'pr','Creado':'p','Pendiente':'p','Asignado':'pr'}[e]||'p';}
+function tnombre(t){return {ING:'Ingenieria / Replanteo',OT:'OT Ruta fibra optica',DESP:'Despliegue',DF:'Documentacion final'}[t]||t;}
+function sync(on){document.getElementById('sdot').className='sd'+(on?' sy':'');}
+function set(id,txt){const el=document.getElementById(id);if(el)el.textContent=txt;}
+function val(id,v){const el=document.getElementById(id);if(el)el.value=v;}
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+let tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.className='show';clearTimeout(tt);tt=setTimeout(()=>t.className='',3000);}
+window.toast=toast;
+function tradErr(c){return({'auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contrasena incorrecta.','auth/invalid-credential':'Email o contrasena incorrectos.','auth/invalid-email':'Email no valido.','auth/too-many-requests':'Demasiados intentos.'})[c]||'Error: '+c;}
+</script>
+</body>
+</html>
