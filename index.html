@@ -91,6 +91,32 @@ input,select,textarea,button{font-family:inherit}
 /* PROYECTOS LISTA */
 .pb{padding:20px 24px}
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+
+
+/* COMENTARIOS ENCARGO CON IMAGEN */
+.cenc-item{display:flex;gap:10px;margin-bottom:12px;}
+.cenc-av{width:28px;height:28px;border-radius:50%;background:var(--al);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--accent);flex-shrink:0;}
+.cenc-body{flex:1;background:var(--bg);border-radius:var(--r);padding:8px 12px;}
+.cenc-meta{font-size:10px;color:var(--muted);margin-bottom:4px;}
+.cenc-meta b{color:var(--text);font-weight:600;}
+.cenc-txt{font-size:12px;line-height:1.5;margin-bottom:6px;}
+.cenc-imgs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.cenc-img{width:80px;height:80px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid var(--border);}
+.img-preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:5000;align-items:center;justify-content:center;}
+.img-preview-overlay.open{display:flex;}
+.img-preview-overlay img{max-width:90vw;max-height:90vh;border-radius:8px;}
+.img-drop-zone{border:2px dashed var(--border);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--muted);text-align:center;cursor:pointer;transition:all .15s;margin-bottom:8px;}
+.img-drop-zone:hover,.img-drop-zone.drag{border-color:var(--accent);color:var(--accent);background:var(--al);}
+.img-thumbs-preview{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.img-thumb-pre{position:relative;}
+.img-thumb-pre img{width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);}
+.img-thumb-pre button{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;border:none;cursor:pointer;font-size:10px;line-height:1;padding:0;}
+
+/* MAX WIDTH CONTENIDO */
+.db,.py{max-width:1400px;margin-left:auto;margin-right:auto;}
+.tc{max-width:1400px;margin-left:auto;margin-right:auto;}
+.pb>div{max-width:1400px;margin-left:auto;margin-right:auto;}
+.ptab td:nth-child(2){max-width:340px;overflow:hidden;text-overflow:ellipsis;}
 .pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px;cursor:pointer;transition:all .15s}
 .pc:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(26,92,255,.08)}
 .pc.ia{border-left:3px solid var(--red)}
@@ -478,6 +504,7 @@ input,select,textarea,button{font-family:inherit}
       <button class="tbb" onclick="sTab('empalmes',this)">Empalmes</button>
       <button class="tbb" onclick="sTab('eco',this)">Economico</button>
       <button class="tbb" onclick="sTab('docs',this)">Documentos</button>
+      <button class="tbb" onclick="sTab('comentarios',this)">Comentarios</button>
     </div>
 
     <!-- DATOS BASE -->
@@ -689,6 +716,51 @@ input,select,textarea,button{font-family:inherit}
       </div>
     </div>
 
+
+    <!-- COMENTARIOS ENCARGO -->
+    <div class="tc" id="tab-comentarios">
+      <div class="fs">
+        <div class="fst">Comentarios del encargo</div>
+        <div class="nota-filtros" id="cenc-filtros">
+          <span class="nf-pill active" onclick="sfCEnc('t',this)">Todos</span>
+          <span class="nf-pill" onclick="sfCEnc('General',this)">General</span>
+          <span class="nf-pill" onclick="sfCEnc('Replanteo',this)">Replanteo</span>
+          <span class="nf-pill" onclick="sfCEnc('OC',this)">OC</span>
+          <span class="nf-pill" onclick="sfCEnc('Tendido',this)">Tendido</span>
+          <span class="nf-pill" onclick="sfCEnc('OT',this)">OT</span>
+          <span class="nf-pill" onclick="sfCEnc('Empalmes',this)">Empalmes</span>
+          <span class="nf-pill" onclick="sfCEnc('Incidencia',this)">Incidencia</span>
+        </div>
+        <div id="cenc-list" style="min-height:60px;margin-bottom:16px;max-height:420px;overflow-y:auto;"></div>
+        <div style="border-top:1px solid var(--border);padding-top:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="fi"><label>Etiqueta</label>
+              <select id="cenc-etq" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;">
+                <option>General</option><option>Replanteo</option><option>OC</option><option>Tendido</option><option>OT</option><option>Empalmes</option><option>Incidencia</option>
+              </select>
+            </div>
+            <div class="fi"><label>Estado</label>
+              <select id="cenc-est" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;">
+                <option>Pendiente</option><option>En ejecucion</option><option>Finalizado</option><option>Parado</option><option>Anulado</option>
+              </select>
+            </div>
+            <div class="fi"><label>Autor</label>
+              <input id="cenc-autor" placeholder="Tu nombre" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;background:var(--bg);outline:none;">
+            </div>
+          </div>
+          <div class="img-drop-zone" id="cenc-dropzone" onclick="document.getElementById('cenc-file').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="cencDrop(event)">
+            📎 Haz clic o arrastra imagenes aqui (opcional)
+            <input type="file" id="cenc-file" accept="image/*" multiple style="display:none" onchange="cencFileAdd(this)">
+          </div>
+          <div class="img-thumbs-preview" id="cenc-previews"></div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="cenc-txt" rows="3" placeholder="Escribe un comentario..." style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;resize:none;background:var(--surface);outline:none;"></textarea>
+            <button class="bp" onclick="addCEnc()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- fin vistaEncargo -->
 
 </div><!-- fin app -->
@@ -724,6 +796,11 @@ input,select,textarea,button{font-family:inherit}
     </div>
     <div class="ma"><button class="bg" onclick="cM()">Cancelar</button><button class="bp" onclick="crearE()">Crear encargo</button></div>
   </div>
+</div>
+
+<!-- LIGHTBOX IMAGENES -->
+<div class="img-preview-overlay" id="imgOverlay" onclick="this.classList.remove('open')">
+  <img id="imgOverlayImg" src="" alt="">
 </div>
 
 <div id="toast"></div>
@@ -782,7 +859,7 @@ async function cargar(){
   } catch(e){ rD(); rP(); sync(false); toast('Error de conexion'); }
 }
 
-function demo(){
+function _demo_disabled(){
   proyectos=[
     {id:'p1',codigo:'XM08009v_006',nombre:'SE 100Mb 65.4 C. Conserv Argentona-Bracons',navision:'M30645756/052',promotor:'XOC',municipio:'Argentona',direccion:'Carretera C-60, km 12',responsable:'Sergio Paloma',fecha:'08/04/2026',nodo:'PEDR-4375',cliente:'XOC',
      encargos:[
@@ -1113,6 +1190,10 @@ window.aE=function(pId,eId){
   sTab(tabId,tabBtn);
   notaFiltro='todas';
   rNotas();
+  cencFiltro='t';
+  cencImagenesPendientes=[];
+  rCEncPreviews();
+  rCEnc(encActual.comentarios||[]);
 };
 
 window.vLista=function(){
@@ -1132,6 +1213,7 @@ window.sTab=function(id,btn){
   document.getElementById('tab-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
   if(id==='eco') rEco();
+  if(id==='comentarios'&&encActual) rCEnc(encActual.comentarios||[]);
 };
 
 // COMENTARIOS
@@ -1381,6 +1463,106 @@ window.addNota=async function(){
   try{await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{encargos:proyActual.encargos});toast('Nota guardada');}
   catch(e){toast('Guardado localmente');}
 };
+
+
+// COMENTARIOS POR ENCARGO
+let cencFiltro = 't';
+let cencImagenesPendientes = []; // [{data: base64, name: string}]
+
+window.sfCEnc = function(v, btn){
+  cencFiltro = v;
+  document.getElementById('cenc-filtros').querySelectorAll('.nf-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  if(encActual) rCEnc(encActual.comentarios || []);
+};
+
+function rCEnc(lista){
+  let fil = cencFiltro === 't' ? lista : lista.filter(c => c.etq === cencFiltro);
+  const etqCol = {'Incidencia':'#993C1D','Replanteo':'#1A5CFF','OC':'#0F6E56','Tendido':'#854F0B','OT':'#0F6E56','Empalmes':'#534AB7','General':'#5F5E5A'};
+  const etqBg  = {'Incidencia':'#FAECE7','Replanteo':'#E8EFFE','OC':'#E1F5EE','Tendido':'#FAEEDA','OT':'#E1F5EE','Empalmes':'#F3EEFE','General':'#F1EFE8'};
+  const el = document.getElementById('cenc-list');
+  if(!el) return;
+  el.innerHTML = fil.map(c => {
+    const ini = (c.autor||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const tc = etqCol[c.etq]||'#5F5E5A', tb = etqBg[c.etq]||'#F1EFE8';
+    const estHtml = c.est ? `<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:${estTagBg(c.est)};color:${estTagCol(c.est)};margin-left:4px;">${c.est}</span>` : '';
+    const imgsHtml = (c.imgs||[]).length ? `<div class="cenc-imgs">${c.imgs.map(img=>`<img class="cenc-img" src="${img}" onclick="abrirImg('${img}')">`).join('')}</div>` : '';
+    return `<div class="cenc-item">
+      <div class="cenc-av">${ini}</div>
+      <div class="cenc-body">
+        <div class="cenc-meta"><b>${c.autor}</b> · ${c.fec} <span style="background:${tb};color:${tc};font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:4px;">${c.etq}</span>${estHtml}</div>
+        <div class="cenc-txt">${c.txt}</div>
+        ${imgsHtml}
+      </div>
+    </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Sin comentarios aun.</div>';
+}
+
+window.cencFileAdd = function(input){
+  Array.from(input.files).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      cencImagenesPendientes.push({data: e.target.result, name: f.name});
+      rCEncPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+  input.value = '';
+};
+
+window.cencDrop = function(e){
+  e.preventDefault();
+  document.getElementById('cenc-dropzone').classList.remove('drag');
+  Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      cencImagenesPendientes.push({data: ev.target.result, name: f.name});
+      rCEncPreviews();
+    };
+    reader.readAsDataURL(f);
+  });
+};
+
+function rCEncPreviews(){
+  const el = document.getElementById('cenc-previews');
+  if(!el) return;
+  el.innerHTML = cencImagenesPendientes.map((img, i) =>
+    `<div class="img-thumb-pre"><img src="${img.data}"><button onclick="cencRemoveImg(${i})">×</button></div>`
+  ).join('');
+}
+
+window.cencRemoveImg = function(i){
+  cencImagenesPendientes.splice(i, 1);
+  rCEncPreviews();
+};
+
+window.addCEnc = async function(){
+  const txt = document.getElementById('cenc-txt').value.trim();
+  if(!txt && cencImagenesPendientes.length === 0){ toast('Escribe un comentario o añade una imagen'); return; }
+  if(!encActual || !proyActual) return;
+  const autor = document.getElementById('cenc-autor').value.trim() || (cusr?.email || 'Usuario');
+  const etq   = document.getElementById('cenc-etq').value;
+  const est   = document.getElementById('cenc-est').value;
+  const now   = new Date();
+  const fec   = now.toLocaleDateString('es-ES') + ' ' + now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const imgs  = cencImagenesPendientes.map(i => i.data);
+  if(!encActual.comentarios) encActual.comentarios = [];
+  encActual.comentarios.unshift({autor, etq, est, txt, fec, imgs});
+  document.getElementById('cenc-txt').value = '';
+  cencImagenesPendientes = [];
+  rCEncPreviews();
+  rCEnc(encActual.comentarios);
+  try{
+    await updateDoc(doc(db,'proyectos_xoc', proyActual.id), {encargos: proyActual.encargos});
+    toast('Comentario guardado');
+  } catch(e){ toast('Guardado localmente'); }
+};
+
+window.abrirImg = function(src){
+  document.getElementById('imgOverlayImg').src = src;
+  document.getElementById('imgOverlay').classList.add('open');
+};
+
 
 // UTILS
 function esc(e){return {'En ejecucion':'ej','Finalizado':'fin','Certificado':'ce','Replanteo':'rp','Presupuesto':'pr','Creado':'p','Pendiente':'p','Asignado':'pr'}[e]||'p';}
