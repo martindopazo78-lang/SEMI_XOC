@@ -1859,50 +1859,32 @@ window.handlePasteImg = function(e, addFn){
 };
 
 // Listener global Ctrl+V — detecta en qué zona estamos y añade la imagen
+// ✅ SOPORTE EXTRA PARA SECCIONES (sin romper lo anterior)
 document.addEventListener('paste', function(e){
-
-  if(!encActual) return;
 
   const active = document.activeElement;
   if(!active || active.tagName !== 'TEXTAREA') return;
 
-  const id = active.id || '';
+  // SOLO actuar si es textarea de sección
+  if(!active.id || !active.id.startsWith('sec-txt-')) return;
 
-  const match = id.match(/^sec-txt-(.+)$/);
-  if(!match) return;
-
-  const seccion = match[1];
+  const seccion = active.id.replace('sec-txt-','');
 
   const items = e.clipboardData?.items;
   if(!items) return;
 
-  let hayImg = false;
-
   for(const item of items){
     if(item.type.startsWith('image/')){
-      hayImg = true;
-      break;
-    }
-  }
+      e.preventDefault();
 
-  if(!hayImg) return;
-
-  e.preventDefault();
-
-  for(const item of items){
-    if(item.type.startsWith('image/')){
       const file = item.getAsFile();
-      if(!file) continue;
-
       const reader = new FileReader();
 
       reader.onload = ev => {
+        if(!window.secComPendientes) window.secComPendientes = {};
+        if(!secComPendientes[seccion]) secComPendientes[seccion] = [];
 
-        if(!window.secComPendientes[seccion]){
-          window.secComPendientes[seccion] = [];
-        }
-
-        window.secComPendientes[seccion].push({
+        secComPendientes[seccion].push({
           data: ev.target.result,
           name: 'captura.png',
           isPdf: false
