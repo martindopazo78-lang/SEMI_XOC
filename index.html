@@ -1860,52 +1860,63 @@ window.handlePasteImg = function(e, addFn){
 
 // Listener global Ctrl+V — detecta en qué zona estamos y añade la imagen
 document.addEventListener('paste', function(e){
+
+  if(!encActual) return;
+
+  const active = document.activeElement;
+  if(!active || active.tagName !== 'TEXTAREA') return;
+
+  const id = active.id || '';
+
+  const match = id.match(/^sec-txt-(.+)$/);
+  if(!match) return;
+
+  const seccion = match[1];
+
   const items = e.clipboardData?.items;
   if(!items) return;
-  let hasImg = false;
-  for(const item of Array.from(items)){
-    if(item.type.startsWith('image/')){ hasImg=true; break; }
-  }
-  if(!hasImg) return;
 
-  // Ver qué tab de encargo está activa
-  const tabEmp  = document.getElementById('tab-empalmes');
-  const tabCenc = document.getElementById('tab-comentarios');
+  let hayImg = false;
 
-  if(tabEmp && tabEmp.classList.contains('active')){
-    e.preventDefault();
-    for(const item of Array.from(e.clipboardData.items)){
-      if(item.type.startsWith('image/')){
-        const file = item.getAsFile();
-        const reader = new FileReader();
-        reader.onload = ev => {
-          empnotaPendientes.push({data:ev.target.result, name:'captura.png', isPdf:false});
-          rEmpnotaPreviews();
-          toast('Imagen pegada ✓');
-        };
-        reader.readAsDataURL(file);
-      }
+  for(const item of items){
+    if(item.type.startsWith('image/')){
+      hayImg = true;
+      break;
     }
-    return;
   }
 
-  if(tabCenc && tabCenc.classList.contains('active')){
-    e.preventDefault();
-    for(const item of Array.from(e.clipboardData.items)){
-      if(item.type.startsWith('image/')){
-        const file = item.getAsFile();
-        const reader = new FileReader();
-        reader.onload = ev => {
-          cencPendientes.push({data:ev.target.result, name:'captura.png', isPdf:false});
-          rCEncPreviews();
-          toast('Imagen pegada ✓');
-        };
-        reader.readAsDataURL(file);
-      }
+  if(!hayImg) return;
+
+  e.preventDefault();
+
+  for(const item of items){
+    if(item.type.startsWith('image/')){
+      const file = item.getAsFile();
+      if(!file) continue;
+
+      const reader = new FileReader();
+
+      reader.onload = ev => {
+
+        if(!window.secComPendientes[seccion]){
+          window.secComPendientes[seccion] = [];
+        }
+
+        window.secComPendientes[seccion].push({
+          data: ev.target.result,
+          name: 'captura.png',
+          isPdf: false
+        });
+
+        rSecComPreviews(seccion);
+        toast('Imagen pegada ✅');
+      };
+
+      reader.readAsDataURL(file);
     }
-    return;
   }
-});
+
+}, true);
 
 
 // ── NOTAS EMPALMES ───────────────────────────────────────────────────
