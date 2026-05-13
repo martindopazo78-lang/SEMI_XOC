@@ -347,61 +347,6 @@ input,select,textarea,button{font-family:inherit}
 .rn-body{flex:1;}
 .rn-meta{font-size:10px;color:var(--muted);margin-bottom:2px;}
 .rn-txt{font-size:12px;}
-
-/* BLOQUE UNIVERSAL DE COMENTARIOS (fixed abajo en cualquier tab del encargo) */
-#ucom{
-  position:fixed;
-  left:0;right:0;bottom:0;
-  background:var(--surface);
-  border-top:2px solid var(--accent);
-  box-shadow:0 -4px 20px rgba(0,0,0,.06);
-  z-index:90;
-  max-height:60vh;
-  display:flex;
-  flex-direction:column;
-}
-#ucom.collapsed{max-height:44px;overflow:hidden;}
-/* Cuando #ucom está abierto, dejar hueco al final del scroll del encargo */
-body.ucom-on #ve{padding-bottom:80px;}
-body.ucom-on.ucom-expanded #ve{padding-bottom:380px;}
-#ucom-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 20px;border-bottom:1px solid var(--border);
-  background:var(--bg);cursor:pointer;user-select:none;flex-shrink:0;
-}
-#ucom-bar-l{display:flex;align-items:center;gap:10px;}
-#ucom-bar-t{font-size:12px;font-weight:600;color:var(--text);}
-#ucom-bar-c{font-size:10px;color:var(--muted);background:var(--surface);padding:2px 8px;border-radius:99px;border:1px solid var(--border);}
-#ucom-bar-tog{font-size:14px;color:var(--muted);transition:transform .2s;}
-#ucom.collapsed #ucom-bar-tog{transform:rotate(180deg);}
-#ucom-body{padding:12px 20px 14px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:10px;}
-#ucom-filters{display:flex;gap:5px;flex-wrap:wrap;align-items:center;font-size:11px;}
-#ucom-filters .fl-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:500;margin-right:2px;}
-#ucom-filters .nf-pill{padding:2px 9px;font-size:10px;}
-#ucom-list{max-height:240px;overflow-y:auto;background:var(--bg);border-radius:var(--r);padding:8px 10px;}
-#ucom-list:empty::before{content:'Sin comentarios todavía en este encargo.';display:block;font-size:11px;color:var(--muted);font-style:italic;padding:6px 0;text-align:center;}
-#ucom-list .cenc-item{margin-bottom:8px;}
-#ucom-list .cenc-item:last-child{margin-bottom:0;}
-#ucom-input{
-  display:flex;gap:8px;align-items:stretch;
-  border:1px solid var(--border);border-radius:var(--r);background:var(--surface);padding:8px;
-}
-#ucom-input textarea{
-  flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:12px;
-  background:transparent;padding:4px 6px;min-height:34px;max-height:120px;
-}
-#ucom-input .ucom-actions{display:flex;flex-direction:column;gap:5px;align-items:stretch;}
-#ucom-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-#ucom-meta select,#ucom-meta input{padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:11px;background:var(--bg);outline:none;font-family:inherit;}
-#ucom-meta select:focus,#ucom-meta input:focus{border-color:var(--accent);}
-.ucom-drop-zone{
-  border:1.5px dashed var(--border);border-radius:6px;padding:5px 10px;font-size:10px;
-  color:var(--muted);cursor:pointer;text-align:center;transition:all .15s;white-space:nowrap;
-}
-.ucom-drop-zone:hover,.ucom-drop-zone.drag{border-color:var(--accent);color:var(--accent);background:var(--al);}
-#ucom-previews{display:flex;flex-wrap:wrap;gap:5px;}
-#ucom-previews:empty{display:none;}
-#ucom-send{padding:8px 14px;font-size:12px;}
 </style>
 </head>
 <body>
@@ -956,67 +901,6 @@ body.ucom-on.ucom-expanded #ve{padding-bottom:380px;}
 
   </div><!-- fin vistaEncargo -->
 
-  <!-- BLOQUE UNIVERSAL DE COMENTARIOS — sticky abajo en cualquier tab del encargo -->
-  <div id="ucom" style="display:none;">
-    <div id="ucom-bar" onclick="toggleUcom()">
-      <div id="ucom-bar-l">
-        <span id="ucom-bar-t">💬 Comentarios del encargo</span>
-        <span id="ucom-bar-c">0</span>
-        <span id="ucom-active-sec" style="font-size:10px;color:var(--muted);"></span>
-      </div>
-      <span id="ucom-bar-tog">▼</span>
-    </div>
-    <div id="ucom-body">
-      <div id="ucom-filters">
-        <span class="fl-lbl">Sección</span>
-        <span class="nf-pill active" onclick="event.stopPropagation();filtUcom('t',this)">Todas</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('general',this)">General</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('accesos',this)">Accesos</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('permisos',this)">Permisos</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('replanteo',this)">Replanteo</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('oc',this)">OC</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('tendido',this)">Tendido</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('empalmes',this)">Empalmes</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('eco',this)">Económico</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('docs',this)">Documentos</span>
-        <span class="nf-pill" onclick="event.stopPropagation();filtUcom('qpera',this)">QPERA</span>
-      </div>
-      <div id="ucom-list"></div>
-      <div id="ucom-meta">
-        <select id="ucom-sec" title="Sección del comentario">
-          <option value="auto">↻ Sección de la pestaña actual</option>
-          <option value="general">General</option>
-          <option value="accesos">Accesos</option>
-          <option value="permisos">Permisos / PRL</option>
-          <option value="replanteo">Replanteo</option>
-          <option value="oc">Obra Civil</option>
-          <option value="tendido">Tendido</option>
-          <option value="empalmes">Empalmes</option>
-          <option value="eco">Económico</option>
-          <option value="docs">Documentos</option>
-          <option value="qpera">QPERA</option>
-        </select>
-        <select id="ucom-est">
-          <option>Pendiente</option><option>En ejecucion</option><option>Finalizado</option><option>Parado</option><option>Anulado</option>
-        </select>
-        <input id="ucom-autor" placeholder="Tu nombre" style="width:130px;">
-        <label class="ucom-drop-zone" id="ucom-drop"
-          ondragover="event.preventDefault();this.classList.add('drag')"
-          ondragleave="this.classList.remove('drag')"
-          ondrop="ucomDrop(event)">
-          📎 Adjuntar
-          <input type="file" id="ucom-file" accept="image/*,application/pdf" multiple style="display:none" onchange="ucomFileAdd(this)">
-        </label>
-      </div>
-      <div id="ucom-previews"></div>
-      <div id="ucom-input">
-        <textarea id="ucom-txt" rows="2" placeholder="Escribe un comentario o pega una captura (Ctrl+V)..."></textarea>
-        <div class="ucom-actions">
-          <button class="bp" id="ucom-send" onclick="enviarUcom()">Enviar</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div><!-- fin app -->
 
@@ -1112,7 +996,7 @@ onAuthStateChanged(auth,async u=>{
     // Rellenar campos autor con nombre del usuario
     setTimeout(()=>{
       const nombre = getNombreUsuario();
-      ['cautor','cenc-autor','nota-autor','qpera-autor','ucom-autor'].forEach(id=>{
+      ['cautor','cenc-autor','nota-autor','qpera-autor'].forEach(id=>{
         const el=document.getElementById(id);
         if(el&&!el.value) el.value=nombre;
       });
@@ -1335,7 +1219,6 @@ window.irVista=function(v,btn){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('ve').style.display='none';
   document.getElementById('vp').style.display='none';
-  ucomOcultar();
   document.getElementById('vista'+v).classList.add('active');
   btn.classList.add('active');
   if(v==='P') rP();
@@ -1391,13 +1274,16 @@ window.aP=function(id){
 function rEncTable(en){
   const tb=document.getElementById('enc-tbody');
   if(!tb) return;
+  // Tab de destino por tipo de encargo
+  const TAB_POR_TIPO={ING:'replanteo',OC:'oc',TEN:'tendido',OT:'empalmes',DF:'docs'};
   tb.innerHTML=en.map((e,i)=>{
     const qOpts=['PDT DISSENY','EN CURS','PDT VALIDACIO','VALIDAT','TANCAT'];
     const sOpts=['Creado','Presupuesto','Asignado','Replanteo','En ejecucion','Finalizado','Certificado'];
     const qSel=qOpts.map(o=>`<option${e.estadoQ===o?' selected':''}>${o}</option>`).join('');
     const sSel=sOpts.map(o=>`<option${e.estadoS===o?' selected':''}>${o}</option>`).join('');
     const alerta=e.tipo==='ING'&&e.estadoS!=='Finalizado'&&e.estadoS!=='Certificado';
-    return `<tr style="border-bottom:1px solid var(--border);${alerta?'border-left:3px solid var(--red);':''}cursor:pointer;" onclick="aE('${proyActual.id}','${e.id}')">
+    const goTab=TAB_POR_TIPO[e.tipo]||'datos';
+    return `<tr style="border-bottom:1px solid var(--border);${alerta?'border-left:3px solid var(--red);':''}cursor:pointer;" onclick="aE('${proyActual.id}','${e.id}','${goTab}')">
       <td style="padding:8px 12px;">
         <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:2px;">${proyActual.codigo} · ${e.num}</div>
         <div style="font-weight:500;font-size:12px;">${tnombre(e.tipo)}</div>
@@ -1528,19 +1414,15 @@ window.aE=function(pId,eId,goTab){
   if(_tabBtn) _tabBtn.classList.add('active');
   if(_tabDest==='eco') rEco();
   if(_tabDest==='comentarios') rCEnc();
-  // Mostrar bloque universal de comentarios
-  ucomMostrar();
 };
 
 window.vLista=function(){
   document.getElementById('vp').style.display='none';
   document.getElementById('ve').style.display='none';
-  ucomOcultar();
   irVista('P',document.querySelectorAll('.nb')[0]);
 };
 window.vProy=function(){
   document.getElementById('ve').style.display='none';
-  ucomOcultar();
   if(proyActual) aP(proyActual.id);
 };
 
@@ -1554,8 +1436,6 @@ window.sTab=function(id,btn){
   if(tabBtn) tabBtn.classList.add('active');
   if(id==='eco') rEco();
   if(id==='comentarios'&&encActual) rCEnc();
-  // Refrescar etiqueta de sección activa del bloque universal
-  if(typeof rUcomActiveSec === 'function') rUcomActiveSec();
 };
 
 // Rellena el selector de destino y los pills de filtro por encargo
@@ -1691,7 +1571,6 @@ window.enviarC=async function(){
   if(encActual && dest===encActual.id){
     rCEnc();
     if(nuevo.seccion && SECCIONES.includes(nuevo.seccion)) rSecCom(nuevo.seccion);
-    if(typeof rUcom === 'function') rUcom();
   }
   document.getElementById('ctxt').value='';
   window._projPaste = [];
@@ -2287,7 +2166,6 @@ window.addCEnc = async function(){
   cencPendientes=[];
   rCEncPreviews();
   rCEnc();
-  if(typeof rUcom === 'function') rUcom();
   if(typeof rComm === 'function') rComm(proyActual.comentarios);
   try{
     await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{comentarios:proyActual.comentarios});
@@ -2467,7 +2345,6 @@ window.addSecCom = async function(seccion){
   rSecCom(seccion);
   rCEnc();
   rComm(proyActual.comentarios||[]);
-  if(typeof rUcom === 'function') rUcom();
   try{
     await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{comentarios:proyActual.comentarios});
     toast('Comentario guardado');
@@ -2511,9 +2388,7 @@ document.addEventListener('paste', function(e){
       if(!file) continue;
       leerArchivoComprimido(file).then(obj=>{
         if(esUcom){
-          if(!window.ucomPendientes) window.ucomPendientes=[];
-          window.ucomPendientes.push(obj);
-          rUcomPreviews();
+
         } else {
           if(!window.secComPendientes[seccion]) window.secComPendientes[seccion]=[];
           window.secComPendientes[seccion].push(obj);
@@ -2568,7 +2443,6 @@ window.addQpera = async function(){
   rQpera();
   rCEnc(); // también aparece en tab Comentarios
   rComm(proyActual.comentarios||[]); // y en chat general
-  if(typeof rUcom === 'function') rUcom();
   try{
     await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{comentarios:proyActual.comentarios});
     toast('Nota QPERA guardada');
@@ -2581,178 +2455,6 @@ window.abrirImg = function(src){
 };
 
 
-// ── BLOQUE UNIVERSAL DE COMENTARIOS (sticky bottom en encargo) ───────
-window.ucomPendientes = window.ucomPendientes || [];
-window.ucomFiltSec = 't';
-window.ucomExpanded = true;
-
-function ucomMostrar(){
-  if(!encActual) return;
-  const el = document.getElementById('ucom');
-  if(el) el.style.display='flex';
-  document.body.classList.add('ucom-on');
-  if(window.ucomExpanded){
-    document.body.classList.add('ucom-expanded');
-    el.classList.remove('collapsed');
-  } else {
-    document.body.classList.remove('ucom-expanded');
-    el.classList.add('collapsed');
-  }
-  // Rellenar autor si vacío
-  const aut = document.getElementById('ucom-autor');
-  if(aut && !aut.value) aut.value = getNombreUsuario();
-  rUcom();
-}
-
-function ucomOcultar(){
-  const el = document.getElementById('ucom');
-  if(el) el.style.display='none';
-  document.body.classList.remove('ucom-on');
-  document.body.classList.remove('ucom-expanded');
-}
-
-window.toggleUcom = function(){
-  window.ucomExpanded = !window.ucomExpanded;
-  const el = document.getElementById('ucom');
-  if(window.ucomExpanded){
-    el.classList.remove('collapsed');
-    document.body.classList.add('ucom-expanded');
-  } else {
-    el.classList.add('collapsed');
-    document.body.classList.remove('ucom-expanded');
-  }
-};
-
-window.filtUcom = function(v, btn){
-  window.ucomFiltSec = v;
-  document.querySelectorAll('#ucom-filters .nf-pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  rUcom();
-};
-
-// Devuelve la sección "activa" basándose en el tab actual.
-// Para el tab "datos" volvemos a "general", para "comentarios" también.
-function ucomSeccionAuto(){
-  const act = document.querySelector('.tc.active');
-  if(!act) return 'general';
-  const id = (act.id||'').replace('tab-','');
-  if(SECCIONES.includes(id)) return id;
-  return 'general';
-}
-
-function rUcomActiveSec(){
-  const el = document.getElementById('ucom-active-sec');
-  if(!el) return;
-  const sec = ucomSeccionAuto();
-  el.textContent = '· '+nombreSeccion(sec);
-}
-
-function rUcom(){
-  if(!encActual||!proyActual) return;
-  rUcomActiveSec();
-  const todos = (proyActual.comentarios||[]).filter(c => c.encargoId === encActual.id);
-  let lista = todos;
-  if(window.ucomFiltSec !== 't'){
-    lista = lista.filter(c => (c.seccion||'general') === window.ucomFiltSec);
-  }
-  const el = document.getElementById('ucom-list');
-  const cnt = document.getElementById('ucom-bar-c');
-  if(cnt) cnt.textContent = todos.length;
-  if(!el) return;
-  el.innerHTML = lista.map(c=>{
-    const ini=(c.autor||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-    const sec = c.seccion || 'general';
-    const sCol = colorSeccion(sec);
-    const secTagHtml = `<span style="background:${sCol.bg};color:${sCol.fg};font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:4px;">${nombreSeccion(sec)}</span>`;
-    const estHtml=c.est?`<span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;background:${estTagBg(c.est)};color:${estTagCol(c.est)};margin-left:4px;">${c.est}</span>`:'';
-    const adjHtml=(c.imgs||[]).length?`<div class="cenc-imgs">${c.imgs.map(src=>
-      src.startsWith('data:application/pdf')
-        ?`<a href="${src}" download="documento.pdf" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:56px;height:56px;background:#FAECE7;border-radius:6px;border:1px solid #F0997B;text-decoration:none;color:#993C1D;font-size:9px;font-weight:700;gap:3px;"><span style='font-size:16px;'>📄</span>PDF</a>`
-        :`<img class="cenc-img" src="${src}" onclick="abrirImg('${src}')" style="width:56px;height:56px;">`
-    ).join('')}</div>`:'';
-    return `<div class="cenc-item">
-      <div class="cenc-av">${ini}</div>
-      <div class="cenc-body">
-        <div class="cenc-meta"><b>${c.autor}</b> · ${c.fec}${secTagHtml}${estHtml}</div>
-        ${c.txt?`<div class="cenc-txt">${c.txt}</div>`:''}
-        ${adjHtml}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function rUcomPreviews(){
-  const el = document.getElementById('ucom-previews');
-  if(!el) return;
-  el.innerHTML = (window.ucomPendientes||[]).map((f,i)=>
-    f.isPdf
-      ?`<div class="img-thumb-pre"><div class="pdf-thumb"><span style="font-size:18px;">📄</span>${(f.name||'').substring(0,8)}</div><button onclick="ucomRemove(${i})">×</button></div>`
-      :`<div class="img-thumb-pre"><img src="${f.data}"><button onclick="ucomRemove(${i})">×</button></div>`
-  ).join('');
-}
-
-window.ucomRemove = function(i){
-  window.ucomPendientes.splice(i,1);
-  rUcomPreviews();
-};
-
-window.ucomFileAdd = function(input){
-  Promise.all(Array.from(input.files).map(f=>leerArchivoComprimido(f))).then(arr=>{
-    if(!window.ucomPendientes) window.ucomPendientes=[];
-    arr.forEach(o=>window.ucomPendientes.push(o));
-    rUcomPreviews();
-  });
-  input.value='';
-};
-
-window.ucomDrop = function(e){
-  e.preventDefault();
-  const dz=document.getElementById('ucom-drop'); if(dz) dz.classList.remove('drag');
-  const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')||f.type==='application/pdf');
-  Promise.all(files.map(f=>leerArchivoComprimido(f))).then(arr=>{
-    if(!window.ucomPendientes) window.ucomPendientes=[];
-    arr.forEach(o=>window.ucomPendientes.push(o));
-    rUcomPreviews();
-  });
-};
-
-window.enviarUcom = async function(){
-  if(!encActual||!proyActual) return;
-  const txtEl = document.getElementById('ucom-txt');
-  const txt = txtEl.value.trim();
-  const pend = window.ucomPendientes||[];
-  if(!txt && !pend.length){ toast('Escribe un comentario o adjunta un archivo'); return; }
-  const autor = document.getElementById('ucom-autor').value.trim() || getNombreUsuario();
-  const est = document.getElementById('ucom-est').value;
-  const secSel = document.getElementById('ucom-sec').value;
-  const seccion = secSel==='auto' ? ucomSeccionAuto() : secSel;
-  const now = new Date();
-  const fec = now.toLocaleDateString('es-ES')+' '+now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  const imgs = pend.map(f=>f.data);
-  if(!proyActual.comentarios) proyActual.comentarios=[];
-  proyActual.comentarios.unshift({
-    autor,
-    encargoId: encActual.id,
-    encargoNum: encActual.num,
-    encargoTipo: encActual.tipo,
-    seccion,
-    est, txt, fec, imgs
-  });
-  // limpiar
-  txtEl.value='';
-  window.ucomPendientes=[];
-  rUcomPreviews();
-  // refrescar todas las vistas
-  rUcom();
-  rCEnc();
-  rComm(proyActual.comentarios||[]);
-  if(SECCIONES.includes(seccion)) rSecCom(seccion);
-  if(seccion==='qpera') rQpera();
-  try{
-    await updateDoc(doc(db,'proyectos_xoc',proyActual.id),{comentarios:proyActual.comentarios});
-    toast('Comentario guardado');
-  }catch(e){toast('Guardado localmente');}
-};
 
 // MODALES
 window.cM=function(){
