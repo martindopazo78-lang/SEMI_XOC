@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEMI · Fibra Optica XOC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --sidebar-bg: #0f172a;
+            --sidebar-text: #94a3b8;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text);
+            display: flex; flex-direction: column; position: fixed; height: 100vh;
+            padding: 20px 0; overflow-y: auto;
+        }
+        .logo { padding: 0 20px 20px; border-bottom: 1px solid #1e293b; margin-bottom: 20px; }
+        .logo h2 { color: white; font-size: 1.25rem; font-weight: 700; }
+        .logo span { color: var(--primary); font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; }
+        
+        .nav-menu { list-style: none; }
+        .nav-menu li a {
+            display: flex; align-items: center; padding: 12px 20px; color: var(--sidebar-text);
+            text-decoration: none; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-menu li a:hover, .nav-menu li a.active { background: #1e293b; color: white; border-right: 3px solid var(--primary); }
+        .nav-menu li a i { margin-right: 12px; width: 20px; text-align: center; }
+
+        .sidebar-section { padding: 15px 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #475569; font-weight: 600; margin-top: 10px; }
+        .filter-group { padding: 0 20px; margin-bottom: 15px; }
+        .filter-group label { display: block; font-size: 0.85rem; margin-bottom: 8px; cursor: pointer; }
+        .filter-group input { margin-right: 8px; }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+        
+        /* Top Header */
+        .top-header {
+            background: var(--card-bg); padding: 15px 30px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;
+        }
+        .breadcrumbs { font-size: 0.9rem; color: var(--text-light); }
+        .breadcrumbs span { color: var(--text-main); font-weight: 500; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info .avatar { width: 36px; height: 36px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+
+        /* Content Area */
+        .content-area { padding: 30px; flex: 1; }
+
+        /* Project Header */
+        .project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .project-title h1 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; }
+        .project-title p { color: var(--text-light); font-size: 0.9rem; margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px; border-radius: 6px; font-size: 0.875rem; font-weight: 500;
+            cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: white; border-color: var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        /* Status Stepper */
+        .stepper-container { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .stepper { display: flex; justify-content: space-between; position: relative; overflow-x: auto; padding-bottom: 10px;}
+        .stepper::before {
+            content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 2px;
+            background: var(--border); z-index: 1;
+        }
+        .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; flex: 1; min-width: 100px; }
+        .step-circle {
+            width: 30px; height: 30px; border-radius: 50%; background: white; border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin-bottom: 8px;
+        }
+        .step-label { font-size: 0.75rem; color: var(--text-light); text-align: center; font-weight: 500; }
+        .step.active .step-circle { background: var(--primary); border-color: var(--primary); color: white; }
+        .step.active .step-label { color: var(--primary); font-weight: 600; }
+        .step.completed .step-circle { background: var(--success); border-color: var(--success); color: white; }
+        .step.completed .step-circle::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 'solid'; font-size: 0.8rem; }
+        .step.completed .step-label { color: var(--success); }
+
+        /* Tabs */
+        .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 25px; gap: 5px; overflow-x: auto; }
+        .tab-btn {
+            padding: 12px 20px; background: none; border: none; border-bottom: 2px solid transparent;
+            font-size: 0.9rem; font-weight: 500; color: var(--text-light); cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+        /* Cards & Grids */
+        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 24px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select {
+            padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem;
+            transition: 0.2s; background: #f8fafc;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .input-group { position: relative; }
+        .input-group i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-light); cursor: pointer; }
+
+        /* Stats KPIs */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { padding: 15px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .stat-label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+        .stat-card.primary { background: #eff6ff; border-color: #bfdbfe; }
+        .stat-card.primary .stat-value { color: var(--primary); }
+        .stat-card.success { background: #ecfdf5; border-color: #a7f3d0; }
+        .stat-card.success .stat-value { color: var(--success); }
+        .stat-card.warning { background: #fffbeb; border-color: #fde68a; }
+        .stat-card.warning .stat-value { color: var(--warning); }
+
+        /* Tables */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 12px 16px; background: #f8fafc; color: var(--text-light); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #f8fafc; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.5);
+            display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+        .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-light); }
+
+        /* Utilities */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .text-right { text-align: right; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 0; display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>SEMI</h2>
+            <span>FIBRA OPTICA XOC</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#" class="active"><i class="fas fa-project-diagram"></i> Proyectos</a></li>
+            <li><a href="#"><i class="fas fa-clipboard-list"></i> Encargos</a></li>
+            <li><a href="#"><i class="fas fa-map-marked-alt"></i> Mapa</a></li>
+        </ul>
+
+        <div class="sidebar-section">Filtros de Estado</div>
+        <div class="filter-group">
+            <label><input type="checkbox" checked> Todos</label>
+            <label><input type="checkbox"> En curso</label>
+            <label><input type="checkbox"> Pdt. doc</label>
+            <label><input type="checkbox"> Parado</label>
+        </div>
+
+        <div class="sidebar-section">Ubicación</div>
+        <div class="filter-group">
+            <label><input type="checkbox" checked> Todas</label>
+            <label><input type="checkbox"> Barcelona (BCN)</label>
+            <label><input type="checkbox"> Girona</label>
+            <label><input type="checkbox"> Lleida</label>
+            <label><input type="checkbox"> Tarragona (Tgna)</label>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP HEADER -->
+        <header class="top-header">
+            <div class="breadcrumbs">
+                Proyectos / <span>Proyecto-2026-084</span>
+            </div>
+            <div class="user-info">
+                <span>Admin</span>
+                <div class="avatar">A</div>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <div class="content-area">
+            <!-- PROJECT HEADER -->
+            <div class="project-header">
+                <div class="project-title">
+                    <h1>Despliegue FTTH Nodo 42 - Girona</h1>
+                    <p>Código: <strong>PRJ-084</strong> | Promotor: <strong>Telefónica</strong> | Responsable: <strong>J. Pérez</strong></p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="openModal('modalEncargo')"><i class="fas fa-plus"></i> Nuevo Encargo</button>
+                    <button class="btn btn-outline"><i class="fas fa-edit"></i> Editar Datos</button>
+                    <button class="btn btn-primary" onclick="openModal('modalProyecto')"><i class="fas fa-folder-plus"></i> Nuevo Proyecto</button>
+                </div>
+            </div>
+
+            <!-- STATUS STEPPER -->
+            <div class="stepper-container">
+                <div class="stepper">
+                    <div class="step completed">
+                        <div class="step-circle"></div>
+                        <div class="step-label">Creado</div>
+                    </div>
+                    <div class="step completed">
+                        <div class="step-circle"></div>
+                        <div class="step-label">Presupuesto</div>
+                    </div>
+                    <div class="step completed">
+                        <div class="step-circle"></div>
+                        <div class="step-label">Asignado</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Replanteo</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">En ejecución</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">6</div>
+                        <div class="step-label">Finalizado</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">7</div>
+                        <div class="step-label">Certificado</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab(event, 'resumen')">Resumen</button>
+                <button class="tab-btn" onclick="switchTab(event, 'accesos')">Accesos / PRL</button>
+                <button class="tab-btn" onclick="switchTab(event, 'replanteo')">Replanteo</button>
+                <button class="tab-btn" onclick="switchTab(event, 'obra')">Obra Civil</button>
+                <button class="tab-btn" onclick="switchTab(event, 'tendido')">Tendido</button>
+                <button class="tab-btn" onclick="switchTab(event, 'empalmes')">Empalmes</button>
+                <button class="tab-btn" onclick="switchTab(event, 'documentos')">Documentos</button>
+            </div>
+
+            <!-- TAB CONTENT: RESUMEN -->
+            <div id="resumen" class="tab-content active">
+                
+                <!-- DATOS DEL PROYECTO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fas fa-info-circle"></i> Datos del Proyecto</span>
+                        <button class="btn btn-outline btn-sm">Guardar Cambios</button>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" value="PRJ-084" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Hijo Navision</label>
+                            <input type="text" value="NAV-9921">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre del Proyecto</label>
+                            <input type="text" value="Despliegue FTTH Nodo 42">
+                        </div>
+                        <div class="form-group">
+                            <label>Municipio</label>
+                            <input type="text" value="Girona">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" value="C/ Gran Via Jaume I, 45">
+                        </div>
+                        <div class="form-group">
+                            <label>Nodo de Salida</label>
+                            <input type="text" value="NOD-GI-04">
+                        </div>
+                        <div class="form-group">
+                            <label>Coordenadas</label>
+                            <div class="input-group">
+                                <input type="text" value="41.9794, 2.8214" id="coords">
+                                <i class="fas fa-map-marker-alt" title="Ver en Google Maps" onclick="alert('Abrir Google Maps...')"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Entrada</label>
+                            <input type="date" value="2026-05-12">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMPALMES -->
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fas fa-network-wired"></i> Empalmes</span>
+                        <button class="btn btn-primary btn-sm" onclick="addRow()"><i class="fas fa-plus"></i> Añadir Fila</button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card primary">
+                            <div class="stat-value" id="stat-total">12</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-value" id="stat-done">8</div>
+                            <div class="stat-label">Realizados</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-value" id="stat-pending">4</div>
+                            <div class="stat-label">Pendientes</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nodo Origen</th>
+                                    <th>Fibras</th>
+                                    <th>Técnico</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="empalmes-body">
+                                <tr>
+                                    <td>1</td>
+                                    <td>NOD-GI-04</td>
+                                    <td>12</td>
+                                    <td>M. García</td>
+                                    <td>10/06/2026</td>
+                                    <td><span class="badge badge-success">Completado</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>NOD-GI-05</td>
+                                    <td>24</td>
+                                    <td>L. Ruiz</td>
+                                    <td>12/06/2026</td>
+                                    <td><span class="badge badge-warning">En Proceso</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ECONOMICO -->
+                <div class="card">
+                    <div class="card-title">
+                        <span><i class="fas fa-euro-sign"></i> Económico por Encargo</span>
+                        <button class="btn btn-success btn-sm">Guardar Seguimiento</button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">15.400 EUR</div>
+                            <div class="stat-label">Total Presupuesto</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-value">8.200 EUR</div>
+                            <div class="stat-label">Total Certificado</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-value">7.200 EUR</div>
+                            <div class="stat-label">Pendiente</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Encargo</th>
+                                    <th>Tipo</th>
+                                    <th>Presupuesto</th>
+                                    <th>Certificado</th>
+                                    <th>Pendiente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ENC-001</td>
+                                    <td>ING - Ingeniería</td>
+                                    <td>3.000 EUR</td>
+                                    <td>3.000 EUR</td>
+                                    <td>0 EUR</td>
+                                </tr>
+                                <tr>
+                                    <td>ENC-002</td>
+                                    <td>OC - Obra Civil</td>
+                                    <td>10.000 EUR</td>
+                                    <td>5.200 EUR</td>
+                                    <td>4.800 EUR</td>
+                                </tr>
+                                <tr>
+                                    <td>ENC-003</td>
+                                    <td>TEN - Tendido</td>
+                                    <td>2.400 EUR</td>
+                                    <td>0 EUR</td>
+                                    <td>2.400 EUR</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVO PROYECTO -->
+    <div class="modal-overlay" id="modalProyecto">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Proyecto</h3>
+                <button class="close-btn" onclick="closeModal('modalProyecto')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Código *</label>
+                        <input type="text" placeholder="Ej: PRJ-085">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" placeholder="Nombre del proyecto">
+                    </div>
+                    <div class="form-group">
+                        <label>Promotor</label>
+                        <input type="text">
+                    </div>
+                    <div class="form-group">
+                        <label>Municipio</label>
+                        <input type="text">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Trabajos a realizar</label>
+                    <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
+                        <label><input type="checkbox"> ING</label>
+                        <label><input type="checkbox"> OC</label>
+                        <label><input type="checkbox"> TEN</label>
+                        <label><input type="checkbox"> OT</label>
+                        <label><input type="checkbox"> DF</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modalProyecto')">Cancelar</button>
+                <button class="btn btn-primary">Crear Proyecto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NUEVO ENCARGO -->
+    <div class="modal-overlay" id="modalEncargo">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Encargo</h3>
+                <button class="close-btn" onclick="closeModal('modalEncargo')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Número ENC *</label>
+                        <input type="text" placeholder="Ej: ENC-004">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo *</label>
+                        <select>
+                            <option>ING - Ingeniería / Replanteo</option>
+                            <option>OC - Obra Civil</option>
+                            <option>TEN - Tendido</option>
+                            <option>OT - Empalmes</option>
+                            <option>DF - Documentación final</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Responsable</label>
+                        <input type="text">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modalEncargo')">Cancelar</button>
+                <button class="btn btn-primary">Crear Encargo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Add Row to Table (Simulation)
+        let rowCount = 2;
+        function addRow() {
+            rowCount++;
+            const tbody = document.getElementById('empalmes-body');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${rowCount}</td>
+                <td>NOD-GI-0${rowCount}</td>
+                <td>12</td>
+                <td>Nuevo Técnico</td>
+                <td>${new Date().toLocaleDateString()}</td>
+                <td><span class="badge badge-warning">Pendiente</span></td>
+            `;
+            tbody.appendChild(tr);
+            
+            // Update Stats
+            document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) + 1;
+            document.getElementById('stat-pending').innerText = parseInt(document.getElementById('stat-pending').innerText) + 1;
+        }
+    </script>
+</body>
+</html>
